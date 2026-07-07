@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل الاسطبل — إدارة المتدربين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --paper:#F2E9D6;
+    --paper-2:#EADFC6;
+    --ink:#2B2118;
+    --leather:#6B4423;
+    --leather-dark:#4A2E17;
+    --hunter:#4A5D3A;
+    --brass:#B8924F;
+    --rust:#A63D33;
+    --card-shadow: 0 2px 0 rgba(43,33,24,0.08), 0 8px 20px -8px rgba(43,33,24,0.25);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(184,146,79,0.10), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Tajawal', sans-serif;
+    min-height:100vh;
+  }
+  .app{display:flex; min-height:100vh;}
+  /* Sidebar */
+  .sidebar{
+    width:300px;
+    flex-shrink:0;
+    background:var(--leather-dark);
+    color:#EFE3CC;
+    padding:22px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .brand{
+    font-family:'Cairo', sans-serif;
+    font-weight:900;
+    font-size:20px;
+    letter-spacing:0.5px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand span{display:block; line-height:1.25;}
+  .brand .mark{
+    width:34px;height:34px;flex-shrink:0;
+  }
+  .settings-btn{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    color:#EFE3CC;
+    width:32px; height:32px; flex-shrink:0;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+    transition:background .15s ease, transform .3s ease;
+  }
+  .settings-btn:hover{background:rgba(255,255,255,0.16); transform:rotate(45deg);}
+  .brand small{
+    display:block;
+    font-family:'Tajawal';
+    font-weight:400;
+    font-size:12px;
+    color:#C9B98F;
+    letter-spacing:0;
+  }
+  .add-trainee-btn{
+    background:var(--brass);
+    color:var(--leather-dark);
+    border:none;
+    padding:11px 14px;
+    border-radius:10px;
+    font-family:'Cairo';
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .add-trainee-btn:hover{background:#CBA65F;}
+  .add-trainee-btn:active{transform:scale(0.97);}
+  .list-tabs{display:flex; gap:6px;}
+  .tab-btn{
+    flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#C9B98F; padding:7px 0; border-radius:9px; font-family:'Tajawal'; font-weight:700;
+    font-size:12.5px; cursor:pointer; transition:all .15s ease;
+  }
+  .tab-btn.active{background:var(--brass); color:var(--leather-dark); border-color:var(--brass);}
+  .search-box{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:10px;
+    padding:9px 12px;
+    color:#EFE3CC;
+    font-family:'Tajawal';
+    font-size:14px;
+  }
+  .search-box::placeholder{color:#B4A17A;}
+  .trainee-list{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:4px;
+  }
+  .trainee-item{
+    background:rgba(255,255,255,0.05);
+    border:1px solid transparent;
+    border-radius:10px;
+    padding:11px 12px;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .trainee-item:hover{background:rgba(255,255,255,0.10);}
+  .trainee-item.active{
+    background:rgba(184,146,79,0.18);
+    border-color:var(--brass);
+  }
+  .trainee-item .name{font-family:'Cairo'; font-weight:700; font-size:15px; color:#F5EAD2;}
+  .trainee-item .meta{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12.5px; color:#C9B98F; margin-top:4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pill{
+    padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;
+  }
+  .pill.low{background:rgba(166,61,51,0.25); color:#F0B5AC;}
+  .pill.ok{background:rgba(74,93,58,0.3); color:#C7DDB4;}
+  .wa-mini{
+    background:#3FA24A; border:none; color:#fff; width:20px; height:20px; border-radius:6px;
+    font-size:11px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    padding:0;
+  }
+  .wa-mini:hover{background:#358f3f;}
+  .empty-list{color:#9C8A66; font-size:13px; text-align:center; padding:24px 8px;}
+
+  /* Main */
+  .main{flex:1; padding:30px 34px; overflow-y:auto;}
+  .toolbar{
+    display:flex; align-items:center; justify-content:flex-start;
+    margin-bottom:22px;
+  }
+  .menu-wrap{position:relative;}
+  .menu-trigger{
+    background:var(--paper-2);
+  }
+  .inline-status{
+    margin-inline-start:10px; font-size:12px; color:#8A6A46; vertical-align:middle;
+  }
+  .tools-menu{
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;
+    min-width:230px;
+    background:var(--paper);
+    border:1px solid rgba(107,68,35,0.2);
+    border-radius:12px;
+    box-shadow:0 12px 30px -8px rgba(0,0,0,0.5);
+    padding:8px;
+    z-index:60;
+    flex-direction:column;
+  }
+  .tools-menu.show{display:flex;}
+  .menu-section-label{
+    font-size:11px; font-weight:700; color:var(--brass); text-transform:uppercase;
+    padding:8px 12px 3px;
+  }
+  .menu-item{
+    background:transparent; border:none; color:var(--ink); text-align:right;
+    padding:9px 12px; border-radius:8px; font-family:'Tajawal'; font-size:13.5px;
+    cursor:pointer; width:100%; display:flex; align-items:center; gap:8px;
+  }
+  .menu-item:hover{background:rgba(107,68,35,0.08);}
+  .toolbar-group{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .tb-btn{
+    background:transparent; border:1.5px solid var(--leather); color:var(--leather);
+    padding:7px 13px; border-radius:8px; font-family:'Tajawal'; font-weight:700; font-size:13px;
+    cursor:pointer; transition:all .15s ease; white-space:nowrap;
+  }
+  .tb-btn:hover{background:var(--leather); color:#F5EAD2;}
+  .auto-toggle{
+    display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--ink);
+    user-select:none;
+  }
+  .auto-toggle input{accent-color:var(--brass); width:15px; height:15px; cursor:pointer;}
+  .toolbar-status{font-size:11.5px; color:#8A6A46;}
+
+  .top-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:26px;
+  }
+  .stat-card{
+    background:var(--paper-2);
+    border-radius:14px;
+    padding:16px 18px;
+    box-shadow:var(--card-shadow);
+    border:1px solid rgba(107,68,35,0.12);
+  }
+  .stat-card .label{font-size:12.5px; color:var(--leather); font-weight:700;}
+  .stat-card .value{
+    font-family:'Cairo'; font-weight:900; font-size:26px; margin-top:4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card.warn .value{color:var(--rust);}
+
+  .welcome{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:60vh; text-align:center; color:var(--leather);
+  }
+  .welcome .mark-big{width:90px; height:90px; opacity:.55; margin-bottom:14px;}
+  .welcome h2{font-family:'Cairo'; margin:0 0 6px;}
+  .welcome p{margin:0; color:#8A6A46; max-width:360px;}
+
+  .trainee-panel{display:none; flex-direction:column; gap:22px;}
+  .trainee-panel.show{display:flex;}
+
+  .panel-header{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    background:var(--paper-2);
+    border-radius:16px;
+    padding:22px 24px;
+    box-shadow:var(--card-shadow);
+    border:1px solid rgba(107,68,35,0.12);
+  }
+  .panel-header h1{font-family:'Cairo'; font-weight:900; font-size:26px; margin:0 0 4px;}
+  .panel-header .sub{color:#8A6A46; font-size:13.5px;}
+  .header-actions{display:flex; gap:8px;}
+  .icon-btn{
+    background:transparent; border:1.5px solid var(--leather); color:var(--leather);
+    padding:8px 14px; border-radius:9px; font-family:'Tajawal'; font-weight:700; font-size:13.5px;
+    cursor:pointer; transition:all .15s ease;
+  }
+  .icon-btn:hover{background:var(--leather); color:#F5EAD2;}
+  .icon-btn.danger{border-color:var(--rust); color:var(--rust);}
+  .icon-btn.danger:hover{background:var(--rust); color:#fff;}
+
+  .grid-2{display:grid; grid-template-columns: 1.1fr 1.5fr; gap:18px; align-items:start;}
+
+  .balance-card{
+    background:var(--paper-2); border-radius:16px; padding:22px; box-shadow:var(--card-shadow);
+    border:1px solid rgba(107,68,35,0.12);
+    display:flex; flex-direction:column; align-items:center; gap:12px;
+  }
+  .horseshoe-wrap{position:relative; width:190px; height:190px;}
+  .horseshoe-wrap svg{width:100%; height:100%; transform:rotate(0deg);}
+  .hs-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; top:14px;
+  }
+  .hs-center .num{font-family:'Cairo'; font-weight:900; font-size:34px; font-variant-numeric: tabular-nums;}
+  .hs-center .lbl{font-size:12px; color:#8A6A46; margin-top:-2px;}
+  .balance-sub{
+    display:flex; gap:18px; font-size:13px; color:#6B4C2F; font-variant-numeric: tabular-nums;
+  }
+  .balance-sub b{color:var(--ink);}
+
+  .fee-row{
+    width:100%; margin-top:6px; padding-top:14px; border-top:1px dashed rgba(107,68,35,0.25);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .fee-status{font-family:'Cairo'; font-weight:700; font-size:14px;}
+  .fee-status.paid{color:var(--hunter);}
+  .fee-status.due{color:var(--rust);}
+  .small-btn{
+    background:var(--hunter); color:#EFE9D9; border:none; padding:6px 12px; border-radius:8px;
+    font-size:12.5px; font-weight:700; cursor:pointer; font-family:'Tajawal';
+  }
+  .small-btn:hover{opacity:.9;}
+  .small-btn.brass{background:var(--brass); color:var(--leather-dark);}
+
+  .right-col{display:flex; flex-direction:column; gap:16px;}
+
+  .action-card{
+    background:var(--paper-2); border-radius:16px; padding:20px; box-shadow:var(--card-shadow);
+    border:1px solid rgba(107,68,35,0.12);
+  }
+  .action-card h3{font-family:'Cairo'; margin:0 0 12px; font-size:16px;}
+  .form-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .form-row input, .form-row textarea{
+    font-family:'Tajawal'; font-size:14px; padding:9px 12px; border-radius:9px;
+    border:1.5px solid rgba(107,68,35,0.25); background:#FBF6E9; color:var(--ink);
+    flex:1; min-width:120px;
+  }
+  .form-row input:focus, .form-row textarea:focus{outline:none; border-color:var(--brass);}
+  .form-row button{
+    background:var(--leather); color:#F5EAD2; border:none; padding:9px 18px; border-radius:9px;
+    font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:14px;
+  }
+  .form-row button:hover{background:var(--leather-dark);}
+
+  .log-list{display:flex; flex-direction:column; gap:0; max-height:340px; overflow-y:auto;}
+  .log-entry{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 4px; border-bottom:1px solid rgba(107,68,35,0.12);
+    font-size:13.5px;
+  }
+  .log-entry:last-child{border-bottom:none;}
+  .log-entry .date{font-weight:700; font-variant-numeric: tabular-nums; min-width:95px;}
+  .log-entry .note{color:#8A6A46; flex:1; margin:0 10px; font-size:12.5px;}
+  .log-entry .hrs{font-variant-numeric: tabular-nums; font-weight:700; color:var(--leather);}
+  .log-entry .del{
+    background:none; border:none; color:var(--rust); cursor:pointer; font-size:16px; padding:0 4px;
+    opacity:.55;
+  }
+  .log-entry .del:hover{opacity:1;}
+  .empty-log{color:#9C8A66; font-size:13px; text-align:center; padding:18px 0;}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(43,33,24,0.55); display:none;
+    align-items:center; justify-content:center; z-index:50;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:var(--paper); border-radius:16px; padding:26px; width:360px; max-width:90vw;
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .modal h3{font-family:'Cairo'; margin:0 0 16px;}
+  .modal .form-row{flex-direction:column;}
+  .modal .form-row input{width:100%;}
+  .modal-actions{display:flex; gap:8px; margin-top:16px; justify-content:flex-end;}
+  .modal-actions button{
+    padding:9px 16px; border-radius:9px; border:none; font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:13.5px;
+  }
+  .modal-actions .cancel{background:transparent; border:1.5px solid #8A6A46; color:#8A6A46;}
+  .modal-actions .confirm{background:var(--leather); color:#F5EAD2;}
+
+  ::-webkit-scrollbar{width:7px;}
+  ::-webkit-scrollbar-thumb{background:rgba(107,68,35,0.3); border-radius:10px;}
+
+  @media (max-width: 860px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;}
+    .grid-2{grid-template-columns:1fr;}
+    .top-stats{grid-template-columns:repeat(2,1fr);}
+  }
+
+  #printArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{
+      display:block; position:absolute; top:0; right:0; left:0;
+      padding:20px; background:#fff; color:#000;
+    }
+    .print-header{display:flex; align-items:center; gap:14px; border-bottom:3px solid #6B4423; padding-bottom:12px; margin-bottom:16px;}
+    .print-header img{width:54px; height:54px; border-radius:8px; object-fit:cover;}
+    .print-header h1{font-family:'Cairo', sans-serif; font-size:20px; margin:0;}
+    .print-header .meta{font-size:12px; color:#555;}
+    .print-table{width:100%; border-collapse:collapse; font-size:12px; margin-bottom:18px;}
+    .print-table th, .print-table td{border:1px solid #ccc; padding:6px 8px; text-align:right;}
+    .print-table th{background:#EADFC6;}
+    .print-section-title{font-family:'Cairo', sans-serif; font-weight:700; font-size:14px; margin:16px 0 8px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="brand" id="brandBlock">
+      <img class="mark" id="brandLogo" style="display:none; border-radius:8px; object-fit:cover;" />
+      <svg class="mark" id="brandDefaultMark" viewBox="0 0 40 40" fill="none">
+        <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#B8924F"/>
+      </svg>
+      <div style="flex:1;">
+        <span id="brandName">سجل الاسطبل</span>
+        <small id="brandOwner">إدارة المتدربين والساعات</small>
+      </div>
+      <div class="menu-wrap">
+        <button class="settings-btn" onclick="toggleToolsMenu()" title="خيارات وتقارير">⋮</button>
+        <div class="tools-menu" id="toolsMenu">
+          <div class="menu-section-label">التقارير</div>
+          <button class="menu-item" onclick="closeToolsMenu(); openReportModal();">📊 تصدير تقرير شهري</button>
+
+          <div class="menu-section-label">الحفظ</div>
+          <button class="menu-item" onclick="closeToolsMenu(); manualSave();">💾 حفظ الآن</button>
+          <button class="menu-item" onclick="closeToolsMenu(); downloadJsonBackup();">⬇ تنزيل نسخة</button>
+
+          <div class="menu-section-label">Google Drive</div>
+          <button class="menu-item" onclick="closeToolsMenu(); backupToDriveNow();">☁ نسخ إلى Drive الآن</button>
+          <label class="auto-toggle menu-item" style="cursor:pointer;">
+            <input type="checkbox" id="autoDriveToggle" onchange="toggleAutoBackup(this.checked)">
+            نسخ تلقائي على Drive
+          </label>
+
+          <div class="toolbar-status" id="toolbarStatus" style="padding:8px 12px 2px; text-align:right;"></div>
+        </div>
+      </div>
+      <button class="settings-btn" onclick="openSettingsModal()" title="إعدادات الاسطبل">⚙</button>
+    </div>
+
+    <button class="add-trainee-btn" onclick="openAddTraineeModal()">+ إضافة متدرب جديد</button>
+
+    <div class="list-tabs">
+      <button class="tab-btn active" id="tabActive" onclick="setListView('active')">نشط</button>
+      <button class="tab-btn" id="tabArchived" onclick="setListView('archived')">مؤرشف</button>
+    </div>
+
+    <input class="search-box" id="searchBox" placeholder="بحث عن متدرب..." oninput="renderTraineeList()">
+
+    <div class="trainee-list" id="traineeList"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="top-stats" id="topStats"></div>
+
+    <div class="welcome" id="welcomeScreen">
+      <svg class="mark-big" viewBox="0 0 40 40" fill="none">
+        <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#6B4423"/>
+      </svg>
+      <h2>اختر متدربًا من القائمة</h2>
+      <p>أو أضف متدربًا جديدًا لبدء تسجيل حضوره وساعاته المتبقية ورسومه.</p>
+    </div>
+
+    <div class="trainee-panel" id="traineePanel">
+      <div class="panel-header">
+        <div>
+          <h1 id="pTraineeName">—</h1>
+          <div class="sub" id="pTraineePhone">—</div>
+        </div>
+        <div class="header-actions" id="panelActions"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="balance-card">
+          <div class="horseshoe-wrap">
+            <svg viewBox="0 0 200 200">
+              <path d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#E3D5B0" stroke-width="16" stroke-linecap="round"/>
+              <path id="hsProgress" d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#B8924F" stroke-width="16" stroke-linecap="round"
+                stroke-dasharray="330" stroke-dashoffset="330"/>
+            </svg>
+            <div class="hs-center">
+              <div class="num" id="hsNum">0</div>
+              <div class="lbl">ساعة متبقية</div>
+            </div>
+          </div>
+          <div class="balance-sub">
+            <div>مشترى: <b id="totalPurchased">0</b> س</div>
+            <div>مستخدم: <b id="totalUsed">0</b> س</div>
+          </div>
+          <div class="fee-row">
+            <div>
+              <div style="font-size:12px;color:#8A6A46;">الرسوم المستحقة</div>
+              <div class="fee-status" id="feeStatusText">—</div>
+            </div>
+            <button class="small-btn brass" id="feeToggleBtn" onclick="toggleFeePaid()">تحديد كمدفوع</button>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="action-card">
+            <h3>تسجيل حضور جديد</h3>
+            <div class="form-row">
+              <input type="date" id="attDate">
+              <input type="number" id="attHours" placeholder="عدد الساعات" step="0.5" min="0.5" style="max-width:130px;">
+              <input type="text" id="attNote" placeholder="ملاحظة (اختياري)">
+              <button onclick="addAttendance()">تسجيل</button>
+            </div>
+          </div>
+
+          <div class="action-card">
+            <h3>سجل الحضور</h3>
+            <div class="log-list" id="logList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add trainee -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3>إضافة متدرب جديد</h3>
+    <div class="form-row">
+      <input type="text" id="newName" placeholder="اسم المتدرب">
+      <input type="text" id="newPhone" placeholder="رقم الهاتف (اختياري)">
+      <input type="number" id="newHours" placeholder="عدد الساعات في الباقة" step="0.5" min="0">
+      <input type="number" id="newFee" placeholder="قيمة الرسوم" step="0.5" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('addModal')">إلغاء</button>
+      <button class="confirm" onclick="submitAddTrainee()">إضافة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Monthly report -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal">
+    <h3>تصدير تقرير شهري</h3>
+    <div class="form-row">
+      <input type="month" id="reportMonth">
+    </div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button class="cancel" onclick="closeModal('reportModal')">إلغاء</button>
+      <div style="display:flex; gap:8px;">
+        <button class="confirm" style="background:var(--hunter);" onclick="printMonthlyReport()">طباعة / PDF</button>
+        <button class="confirm" onclick="exportMonthlyExcel()">تصدير Excel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Printable report (hidden on screen) -->
+<div id="printArea"></div>
+
+<!-- Modal: Stable settings -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h3>إعدادات الاسطبل</h3>
+    <div class="form-row">
+      <input type="text" id="setStableName" placeholder="اسم الاسطبل">
+      <input type="text" id="setOwnerName" placeholder="اسم المالك">
+      <div style="display:flex; align-items:center; gap:12px; width:100%;">
+        <img id="logoPreview" style="width:56px; height:56px; border-radius:10px; object-fit:cover; border:1.5px solid rgba(107,68,35,0.25); display:none;">
+        <label for="setLogoFile" style="cursor:pointer; flex:1; text-align:center; padding:10px; border:1.5px dashed rgba(107,68,35,0.35); border-radius:9px; font-size:13px; color:#8A6A46;">
+          اختر شعار الاسطبل (صورة)
+        </label>
+        <input type="file" id="setLogoFile" accept="image/*" style="display:none;" onchange="previewLogo(event)">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('settingsModal')">إلغاء</button>
+      <button class="confirm" onclick="submitSettings()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Renew package -->
+<div class="modal-overlay" id="renewModal">
+  <div class="modal">
+    <h3>تجديد باقة الساعات</h3>
+    <div class="form-row">
+      <input type="number" id="renewHours" placeholder="عدد الساعات الجديدة" step="0.5" min="0">
+      <input type="number" id="renewFee" placeholder="قيمة الرسوم الجديدة" step="0.5" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('renewModal')">إلغاء</button>
+      <button class="confirm" onclick="submitRenew()">تجديد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let DATA = { trainees: [], settings: { stableName:'', ownerName:'', logo:'' } };
+let currentId = null;
+let pendingLogo = null;
+let viewMode = 'active'; // 'active' | 'archived'
+const STORAGE_KEY = 'stable-data-v1';
+
+function setListView(mode){
+  viewMode = mode;
+  document.getElementById('tabActive').classList.toggle('active', mode==='active');
+  document.getElementById('tabArchived').classList.toggle('active', mode==='archived');
+  renderTraineeList();
+}
+
+function uid(){ return 't' + Date.now() + Math.random().toString(36).slice(2,7); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){ DATA = JSON.parse(res.value); }
+  }catch(e){ DATA = { trainees: [] }; }
+  if(!DATA.settings){ DATA.settings = { stableName:'', ownerName:'', logo:'' }; }
+  renderBrand();
+  document.getElementById('autoDriveToggle').checked = !!DATA.settings.autoBackupEnabled;
+  if(DATA.settings.autoBackupEnabled){ toggleAutoBackup(true); }
+  renderAll();
+}
+
+async function saveData(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+  }catch(e){ console.error('storage save failed', e); }
+}
+
+function getTrainee(id){ return DATA.trainees.find(t => t.id === id); }
+
+function remainingHours(t){
+  const purchased = t.packages.reduce((s,p)=>s+p.hours,0);
+  const used = t.attendance.reduce((s,a)=>s+a.hours,0);
+  return Math.round((purchased - used)*100)/100;
+}
+function totalPurchased(t){ return t.packages.reduce((s,p)=>s+p.hours,0); }
+function totalUsedHours(t){ return t.attendance.reduce((s,a)=>s+a.hours,0); }
+function feeDue(t){
+  const totalFee = t.packages.reduce((s,p)=>s+p.fee,0);
+  const paid = t.packages.filter(p=>p.paid).reduce((s,p)=>s+p.fee,0);
+  return Math.round((totalFee - paid)*100)/100;
+}
+
+function renderBrand(){
+  const s = DATA.settings || {};
+  document.getElementById('brandName').textContent = s.stableName || 'سجل الاسطبل';
+  document.getElementById('brandOwner').textContent = s.ownerName ? ('المالك: ' + s.ownerName) : 'إدارة المتدربين والساعات';
+  const logoEl = document.getElementById('brandLogo');
+  const defaultMark = document.getElementById('brandDefaultMark');
+  if(s.logo){
+    logoEl.src = s.logo;
+    logoEl.style.display = 'block';
+    defaultMark.style.display = 'none';
+  } else {
+    logoEl.style.display = 'none';
+    defaultMark.style.display = 'block';
+  }
+}
+
+function openSettingsModal(){
+  const s = DATA.settings || {};
+  document.getElementById('setStableName').value = s.stableName || '';
+  document.getElementById('setOwnerName').value = s.ownerName || '';
+  pendingLogo = s.logo || null;
+  const preview = document.getElementById('logoPreview');
+  if(s.logo){ preview.src = s.logo; preview.style.display='block'; } else { preview.style.display='none'; }
+  document.getElementById('settingsModal').classList.add('show');
+}
+
+function previewLogo(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    pendingLogo = e.target.result;
+    const preview = document.getElementById('logoPreview');
+    preview.src = pendingLogo;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitSettings(){
+  const stableName = document.getElementById('setStableName').value.trim();
+  const ownerName = document.getElementById('setOwnerName').value.trim();
+  DATA.settings = {
+    stableName,
+    ownerName,
+    logo: pendingLogo || (DATA.settings ? DATA.settings.logo : '')
+  };
+  closeModal('settingsModal');
+  await saveData();
+  renderBrand();
+}
+
+function renderAll(){
+  renderTraineeList();
+  renderTopStats();
+  if(currentId && getTrainee(currentId)){
+    renderTraineePanel();
+  } else {
+    currentId = null;
+    document.getElementById('welcomeScreen').style.display='flex';
+    document.getElementById('traineePanel').classList.remove('show');
+  }
+}
+
+function monthlyIncome(monthStr){
+  let total = 0;
+  DATA.trainees.forEach(t=>{
+    t.packages.forEach(p=>{
+      if(p.date.slice(0,7) === monthStr) total += p.fee;
+    });
+  });
+  return Math.round(total*1000)/1000;
+}
+
+function monthlyTraineeCount(monthStr){
+  const ids = new Set();
+  DATA.trainees.forEach(t=>{
+    t.packages.forEach(p=>{
+      if(p.date.slice(0,7) === monthStr) ids.add(t.id);
+    });
+  });
+  return ids.size;
+}
+
+function renderTopStats(){
+  const activeTrainees = DATA.trainees.filter(t=>!t.archived);
+  const total = activeTrainees.length;
+  const lowBalance = activeTrainees.filter(t=>remainingHours(t) <= 2).length;
+  const currentMonth = todayStr().slice(0,7);
+  const mIncome = monthlyIncome(currentMonth);
+  const mCount = monthlyTraineeCount(currentMonth);
+
+  document.getElementById('topStats').innerHTML = `
+    <div class="stat-card">
+      <div class="label">إجمالي المتدربين</div>
+      <div class="value">${total}</div>
+    </div>
+    <div class="stat-card ${lowBalance>0?'warn':''}">
+      <div class="label">رصيد منخفض (≤ 2 س)</div>
+      <div class="value">${lowBalance}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">متدربون هذا الشهر</div>
+      <div class="value">${mCount}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">الدخل الشهري (د.ب)</div>
+      <div class="value">${mIncome.toFixed(3)}</div>
+    </div>
+  `;
+}
+
+function renderTraineeList(){
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const list = document.getElementById('traineeList');
+  const filtered = DATA.trainees
+    .slice()
+    .filter(t => viewMode==='archived' ? !!t.archived : !t.archived)
+    .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
+    .filter(t => t.name.toLowerCase().includes(q));
+
+  if(filtered.length===0){
+    list.innerHTML = `<div class="empty-list">${viewMode==='archived' ? 'لا يوجد متدربون مؤرشفون' : 'لا يوجد متدربون بعد'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(t=>{
+    const rem = remainingHours(t);
+    const low = rem <= 2 && viewMode==='active';
+    return `
+      <div class="trainee-item ${t.id===currentId?'active':''}" onclick="selectTrainee('${t.id}')">
+        <div class="name">${escapeHtml(t.name)}</div>
+        <div class="meta">
+          <span>${rem} س متبقية</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            ${low && t.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendWhatsAppReminder('${t.id}')" title="تذكير واتساب">📱</button>` : ''}
+            <span class="pill ${low?'low':'ok'}">${low?'منخفض':(viewMode==='archived'?'مؤرشف':'جيد')}</span>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectTrainee(id){
+  currentId = id;
+  renderAll();
+}
+
+function renderTraineePanel(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  document.getElementById('welcomeScreen').style.display='none';
+  document.getElementById('traineePanel').classList.add('show');
+
+  document.getElementById('pTraineeName').textContent = t.name;
+  document.getElementById('pTraineePhone').textContent = t.phone ? t.phone : 'لا يوجد رقم هاتف مسجل';
+
+  const actionsEl = document.getElementById('panelActions');
+  if(t.archived){
+    actionsEl.innerHTML = `
+      <button class="icon-btn" onclick="restoreTrainee()">إعادة تنشيط</button>
+      <button class="icon-btn danger" onclick="deleteTrainee()">حذف نهائي</button>
+    `;
+  } else {
+    actionsEl.innerHTML = `
+      <button class="icon-btn" onclick="openRenewModal()">تجديد باقة</button>
+      ${t.phone ? `<button class="icon-btn" style="border-color:#3FA24A; color:#3FA24A;" onclick="sendWhatsAppReminder('${t.id}')">📱 تذكير واتساب</button>` : ''}
+      <button class="icon-btn danger" onclick="archiveTrainee()">أرشفة المتدرب</button>
+    `;
+  }
+
+  const rem = remainingHours(t);
+  const purchased = totalPurchased(t);
+  const used = totalUsedHours(t);
+  const pct = purchased > 0 ? Math.max(0, Math.min(1, rem/purchased)) : 0;
+  const circumference = 330;
+  const offset = circumference - (pct * circumference);
+
+  document.getElementById('hsNum').textContent = rem;
+  document.getElementById('hsProgress').style.strokeDashoffset = offset;
+  document.getElementById('hsProgress').style.stroke = rem <= 2 ? '#A63D33' : '#B8924F';
+  document.getElementById('totalPurchased').textContent = purchased;
+  document.getElementById('totalUsed').textContent = used;
+
+  const due = feeDue(t);
+  const feeEl = document.getElementById('feeStatusText');
+  const feeBtn = document.getElementById('feeToggleBtn');
+  if(due > 0){
+    feeEl.textContent = due.toFixed(3) + ' د.ب مستحقة';
+    feeEl.className = 'fee-status due';
+    feeBtn.style.display = 'inline-block';
+    feeBtn.textContent = 'تحديد كمدفوع';
+  } else {
+    feeEl.textContent = 'مدفوعة بالكامل';
+    feeEl.className = 'fee-status paid';
+    feeBtn.style.display = 'none';
+  }
+
+  document.getElementById('attDate').value = todayStr();
+
+  const logList = document.getElementById('logList');
+  const sortedLog = t.attendance.slice().sort((a,b)=> b.date.localeCompare(a.date));
+  if(sortedLog.length===0){
+    logList.innerHTML = `<div class="empty-log">لا يوجد سجل حضور بعد</div>`;
+  } else {
+    logList.innerHTML = sortedLog.map(a=>`
+      <div class="log-entry">
+        <span class="date">${formatDate(a.date)}</span>
+        <span class="note">${escapeHtml(a.note||'')}</span>
+        <span class="hrs">${a.hours} س</span>
+        <button class="del" onclick="deleteAttendance('${a.id}')" title="حذف">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function formatDate(d){
+  const parts = d.split('-');
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+function escapeHtml(s){
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+/* Modals */
+function openAddTraineeModal(){
+  document.getElementById('newName').value='';
+  document.getElementById('newPhone').value='';
+  document.getElementById('newHours').value='';
+  document.getElementById('newFee').value='';
+  document.getElementById('addModal').classList.add('show');
+}
+function openRenewModal(){
+  document.getElementById('renewHours').value='';
+  document.getElementById('renewFee').value='';
+  document.getElementById('renewModal').classList.add('show');
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+async function submitAddTrainee(){
+  const name = document.getElementById('newName').value.trim();
+  const phone = document.getElementById('newPhone').value.trim();
+  const hours = parseFloat(document.getElementById('newHours').value) || 0;
+  const fee = parseFloat(document.getElementById('newFee').value) || 0;
+  if(!name){ alert('الرجاء إدخال اسم المتدرب'); return; }
+
+  const trainee = {
+    id: uid(),
+    name, phone,
+    packages: hours>0 ? [{id:uid(), hours, fee, paid:false, date:todayStr()}] : [],
+    attendance: []
+  };
+  DATA.trainees.push(trainee);
+  closeModal('addModal');
+  currentId = trainee.id;
+  await saveData();
+  renderAll();
+}
+
+async function submitRenew(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  const hours = parseFloat(document.getElementById('renewHours').value) || 0;
+  const fee = parseFloat(document.getElementById('renewFee').value) || 0;
+  if(hours<=0){ alert('الرجاء إدخال عدد ساعات صحيح'); return; }
+  t.packages.push({id:uid(), hours, fee, paid:false, date:todayStr()});
+  closeModal('renewModal');
+  await saveData();
+  renderAll();
+}
+
+async function toggleFeePaid(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  t.packages.forEach(p => p.paid = true);
+  await saveData();
+  renderAll();
+}
+
+async function addAttendance(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  const date = document.getElementById('attDate').value || todayStr();
+  const hours = parseFloat(document.getElementById('attHours').value);
+  const note = document.getElementById('attNote').value.trim();
+  if(!hours || hours<=0){ alert('الرجاء إدخال عدد ساعات صحيح'); return; }
+
+  t.attendance.push({id:uid(), date, hours, note});
+  document.getElementById('attHours').value='';
+  document.getElementById('attNote').value='';
+  await saveData();
+  renderAll();
+}
+
+async function deleteAttendance(id){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  t.attendance = t.attendance.filter(a=>a.id!==id);
+  await saveData();
+  renderAll();
+}
+
+async function archiveTrainee(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  if(!confirm(`نقل "${t.name}" إلى الأرشيف؟ يمكنك إعادة تنشيطه لاحقًا.`)) return;
+  t.archived = true;
+  currentId = null;
+  await saveData();
+  viewMode = 'active';
+  document.getElementById('tabActive').classList.add('active');
+  document.getElementById('tabArchived').classList.remove('active');
+  renderAll();
+}
+
+async function restoreTrainee(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  t.archived = false;
+  await saveData();
+  viewMode = 'active';
+  document.getElementById('tabActive').classList.add('active');
+  document.getElementById('tabArchived').classList.remove('active');
+  renderAll();
+}
+
+async function deleteTrainee(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  if(!confirm(`حذف "${t.name}" نهائيًا؟ لا يمكن التراجع عن هذا الإجراء.`)) return;
+  DATA.trainees = DATA.trainees.filter(x=>x.id!==currentId);
+  currentId = null;
+  await saveData();
+  renderAll();
+}
+
+function cleanPhoneForWhatsApp(phone){
+  let digits = phone.replace(/[^\d]/g, '');
+  digits = digits.replace(/^0+/, '');
+  if(digits.length <= 8){ digits = '973' + digits; } // افتراض رقم بحريني محلي
+  return digits;
+}
+
+function sendWhatsAppReminder(id){
+  const t = getTrainee(id);
+  if(!t || !t.phone) return;
+  const rem = remainingHours(t);
+  const stableName = (DATA.settings && DATA.settings.stableName) || 'الاسطبل';
+  const ownerName = (DATA.settings && DATA.settings.ownerName) || '';
+  const message =
+    `مرحبًا ${t.name}،\n` +
+    `نود تذكيركم بأن رصيدكم من الساعات في ${stableName} على وشك الانتهاء (المتبقي: ${rem} ساعة فقط).\n` +
+    `يرجى التواصل معنا لتجديد الاشتراك في أقرب وقت.\n` +
+    (ownerName ? `شكرًا لكم — ${ownerName}` : `شكرًا لكم`);
+
+  const phoneDigits = cleanPhoneForWhatsApp(t.phone);
+  const url = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
+/* ---------- Tools menu ---------- */
+function toggleToolsMenu(){
+  document.getElementById('toolsMenu').classList.toggle('show');
+}
+function closeToolsMenu(){
+  document.getElementById('toolsMenu').classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  const wrap = document.querySelector('.menu-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    closeToolsMenu();
+  }
+});
+
+/* ---------- Save / Backup ---------- */
+function setStatus(msg, isError){
+  const color = isError ? '#A63D33' : '#8A6A46';
+  const el = document.getElementById('toolbarStatus');
+  if(el){ el.textContent = msg; el.style.color = color; }
+}
+
+async function manualSave(){
+  setStatus('جارٍ الحفظ...');
+  await saveData();
+  const now = new Date().toLocaleTimeString('ar-BH', {hour:'2-digit', minute:'2-digit'});
+  setStatus('تم الحفظ محليًا — ' + now);
+}
+
+function downloadJsonBackup(){
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `stable_backup_${stamp}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus('تم تنزيل نسخة JSON');
+}
+
+let autoBackupTimer = null;
+let lastBackupSnapshot = null;
+
+function toggleAutoBackup(enabled){
+  DATA.settings = DATA.settings || {};
+  DATA.settings.autoBackupEnabled = enabled;
+  saveData();
+  if(enabled){
+    setStatus('تفعيل النسخ التلقائي على Drive');
+    if(autoBackupTimer) clearInterval(autoBackupTimer);
+    autoBackupTimer = setInterval(()=>{
+      const snap = JSON.stringify(DATA);
+      if(snap !== lastBackupSnapshot){
+        backupToDriveNow(true);
+      }
+    }, 5 * 60 * 1000); // كل 5 دقائق، فقط إذا تغيرت البيانات
+  } else {
+    if(autoBackupTimer){ clearInterval(autoBackupTimer); autoBackupTimer = null; }
+    setStatus('تم إيقاف النسخ التلقائي');
+  }
+}
+
+async function backupToDriveNow(silent){
+  if(!silent) setStatus('جارٍ رفع النسخة الاحتياطية إلى Drive...');
+  const stableName = (DATA.settings && DATA.settings.stableName) || 'الاسطبل';
+  const fileName = 'karco_stable_backup.json';
+  const payload = JSON.stringify(DATA);
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: `Create or update (overwrite if it already exists) a file named "${fileName}" in the root of my Google Drive. The file should contain exactly this JSON content (a backup of "${stableName}" trainee records), with no modification:\n\n${payload}`
+        }],
+        mcp_servers: [{
+          type: "url",
+          url: "https://drivemcp.googleapis.com/mcp/v1",
+          name: "google-drive-mcp"
+        }]
+      })
+    });
+    const data = await response.json();
+    const toolUsed = (data.content || []).some(b => b.type === 'mcp_tool_use');
+    if(toolUsed){
+      lastBackupSnapshot = payload;
+      setStatus('تم النسخ الاحتياطي على Drive بنجاح ✓');
+    } else {
+      setStatus('تعذر تأكيد الرفع على Drive — تحقق من ربط الحساب', true);
+    }
+  } catch(e){
+    console.error(e);
+    setStatus('فشل الاتصال بـ Drive', true);
+  }
+}
+
+/* ---------- Monthly Reports ---------- */
+function openReportModal(){
+  const now = new Date();
+  const val = now.toISOString().slice(0,7);
+  document.getElementById('reportMonth').value = val;
+  document.getElementById('reportModal').classList.add('show');
+}
+
+function getMonthlyAttendance(monthStr){
+  const rows = [];
+  DATA.trainees.forEach(t=>{
+    t.attendance.forEach(a=>{
+      if(a.date.slice(0,7) === monthStr){
+        rows.push({ traineeName: t.name, phone: t.phone||'', date: a.date, hours: a.hours, note: a.note||'' });
+      }
+    });
+  });
+  rows.sort((x,y)=> x.date.localeCompare(y.date));
+  return rows;
+}
+
+function exportMonthlyExcel(){
+  const monthStr = document.getElementById('reportMonth').value;
+  if(!monthStr){ alert('الرجاء اختيار الشهر'); return; }
+
+  const summaryRows = DATA.trainees.map(t=>({
+    'اسم المتدرب': t.name,
+    'الهاتف': t.phone||'',
+    'الساعات المشتراة': totalPurchased(t),
+    'الساعات المستخدمة': totalUsedHours(t),
+    'الساعات المتبقية': remainingHours(t),
+    'الرسوم المستحقة (د.ب)': feeDue(t).toFixed(3)
+  }));
+
+  const attendanceRows = getMonthlyAttendance(monthStr).map(r=>({
+    'التاريخ': r.date,
+    'اسم المتدرب': r.traineeName,
+    'الساعات': r.hours,
+    'ملاحظة': r.note
+  }));
+
+  const wb = XLSX.utils.book_new();
+  const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
+  const wsAttendance = XLSX.utils.json_to_sheet(attendanceRows.length ? attendanceRows : [{'التاريخ':'','اسم المتدرب':'لا يوجد حضور مسجل هذا الشهر','الساعات':'','ملاحظة':''}]);
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'ملخص المتدربين');
+  XLSX.utils.book_append_sheet(wb, wsAttendance, 'حضور ' + monthStr);
+
+  XLSX.writeFile(wb, `تقرير_${monthStr}.xlsx`);
+  closeModal('reportModal');
+  setStatus('تم تصدير تقرير Excel');
+}
+
+function printMonthlyReport(){
+  const monthStr = document.getElementById('reportMonth').value;
+  if(!monthStr){ alert('الرجاء اختيار الشهر'); return; }
+
+  const s = DATA.settings || {};
+  const attendance = getMonthlyAttendance(monthStr);
+  const today = new Date().toLocaleDateString('ar-BH');
+
+  let html = `
+    <div class="print-header">
+      ${s.logo ? `<img src="${s.logo}">` : ''}
+      <div>
+        <h1>${escapeHtml(s.stableName || 'سجل الاسطبل')}</h1>
+        <div class="meta">المالك: ${escapeHtml(s.ownerName || '—')} · تقرير شهر ${monthStr} · تاريخ الإصدار: ${today}</div>
+      </div>
+    </div>
+
+    <div class="print-section-title">ملخص المتدربين</div>
+    <table class="print-table">
+      <tr><th>الاسم</th><th>الهاتف</th><th>ساعات مشتراة</th><th>ساعات مستخدمة</th><th>ساعات متبقية</th><th>رسوم مستحقة (د.ب)</th></tr>
+      ${DATA.trainees.map(t=>`
+        <tr>
+          <td>${escapeHtml(t.name)}</td>
+          <td>${escapeHtml(t.phone||'—')}</td>
+          <td>${totalPurchased(t)}</td>
+          <td>${totalUsedHours(t)}</td>
+          <td>${remainingHours(t)}</td>
+          <td>${feeDue(t).toFixed(3)}</td>
+        </tr>
+      `).join('')}
+    </table>
+
+    <div class="print-section-title">سجل الحضور خلال الشهر</div>
+    <table class="print-table">
+      <tr><th>التاريخ</th><th>اسم المتدرب</th><th>الساعات</th><th>ملاحظة</th></tr>
+      ${attendance.length ? attendance.map(r=>`
+        <tr>
+          <td>${formatDate(r.date)}</td>
+          <td>${escapeHtml(r.traineeName)}</td>
+          <td>${r.hours}</td>
+          <td>${escapeHtml(r.note)}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="4">لا يوجد حضور مسجل هذا الشهر</td></tr>`}
+    </table>
+  `;
+
+  document.getElementById('printArea').innerHTML = html;
+  closeModal('reportModal');
+  setTimeout(()=> window.print(), 150);
+}
+
+loadData();
+</script>
+
+</body>
+</html>
