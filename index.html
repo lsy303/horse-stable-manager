@@ -29,6 +29,7 @@
     font-family:'Tajawal', sans-serif;
     min-height:100vh;
   }
+
   .app{display:flex; min-height:100vh;}
   /* Sidebar */
   .sidebar{
@@ -94,6 +95,16 @@
     font-size:12.5px; cursor:pointer; transition:all .15s ease;
   }
   .tab-btn.active{background:var(--brass); color:var(--leather-dark); border-color:var(--brass);}
+  .section-tabs{display:flex; gap:6px; margin-top:2px;}
+  .section-tab{
+    flex:1; background:rgba(184,146,79,0.10); border:1px solid rgba(184,146,79,0.25);
+    color:#D9C79B; padding:9px 0; border-radius:10px; font-family:'Cairo'; font-weight:700;
+    font-size:13px; cursor:pointer; transition:all .15s ease;
+  }
+  .section-tab.active{background:var(--brass); color:var(--leather-dark); border-color:var(--brass);}
+  #trainingSidebar, #boardingSidebar{
+    display:flex; flex-direction:column; gap:16px; flex:1; min-height:0;
+  }
   .search-box{
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.15);
@@ -371,13 +382,12 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="brand" id="brandBlock">
-      <img class="mark" id="brandLogo" style="display:none; border-radius:8px; object-fit:cover;" />
-      <svg class="mark" id="brandDefaultMark" viewBox="0 0 40 40" fill="none">
+      <svg class="mark" viewBox="0 0 40 40" fill="none">
         <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#B8924F"/>
       </svg>
       <div style="flex:1;">
-        <span id="brandName">سجل الاسطبل</span>
-        <small id="brandOwner">إدارة المتدربين والساعات</small>
+        <span id="brandName">اسطبلات كلاسيك للفروسية</span>
+        <small id="brandOwner">متابعة حصص المتدربين وإيواء الخيول</small>
       </div>
       <div class="menu-wrap">
         <button class="settings-btn" onclick="toggleToolsMenu()" title="خيارات وتقارير">⋮</button>
@@ -388,6 +398,8 @@
           <div class="menu-section-label">الحفظ</div>
           <button class="menu-item" onclick="closeToolsMenu(); manualSave();">💾 حفظ الآن</button>
           <button class="menu-item" onclick="closeToolsMenu(); downloadJsonBackup();">⬇ تنزيل نسخة</button>
+          <button class="menu-item" onclick="document.getElementById('importFileInput').click();">⬆ استيراد نسخة</button>
+          <input type="file" id="importFileInput" accept="application/json" style="display:none;" onchange="importJsonBackup(event)">
 
           <div class="menu-section-label">Google Drive</div>
           <button class="menu-item" onclick="closeToolsMenu(); backupToDriveNow();">☁ نسخ إلى Drive الآن</button>
@@ -396,26 +408,49 @@
             نسخ تلقائي على Drive
           </label>
 
+          <div class="menu-section-label">إعادة ضبط</div>
+          <button class="menu-item" style="color:var(--rust);" onclick="closeToolsMenu(); clearAllData();">🗑 مسح جميع البيانات</button>
+
           <div class="toolbar-status" id="toolbarStatus" style="padding:8px 12px 2px; text-align:right;"></div>
         </div>
       </div>
-      <button class="settings-btn" onclick="openSettingsModal()" title="إعدادات الاسطبل">⚙</button>
     </div>
 
-    <button class="add-trainee-btn" onclick="openAddTraineeModal()">+ إضافة متدرب جديد</button>
-
-    <div class="list-tabs">
-      <button class="tab-btn active" id="tabActive" onclick="setListView('active')">نشط</button>
-      <button class="tab-btn" id="tabArchived" onclick="setListView('archived')">مؤرشف</button>
+    <div class="section-tabs">
+      <button class="section-tab active" id="secTraining" onclick="setAppSection('training')">🐴 التدريب</button>
+      <button class="section-tab" id="secBoarding" onclick="setAppSection('boarding')">🏠 الإيواء</button>
     </div>
 
-    <input class="search-box" id="searchBox" placeholder="بحث عن متدرب..." oninput="renderTraineeList()">
+    <div id="trainingSidebar">
+      <button class="add-trainee-btn" onclick="openAddTraineeModal()">+ إضافة متدرب جديد</button>
 
-    <div class="trainee-list" id="traineeList"></div>
+      <div class="list-tabs">
+        <button class="tab-btn active" id="tabActive" onclick="setListView('active')">نشط</button>
+        <button class="tab-btn" id="tabArchived" onclick="setListView('archived')">مؤرشف</button>
+      </div>
+
+      <input class="search-box" id="searchBox" placeholder="بحث عن متدرب..." oninput="renderTraineeList()">
+
+      <div class="trainee-list" id="traineeList"></div>
+    </div>
+
+    <div id="boardingSidebar" style="display:none;">
+      <button class="add-trainee-btn" onclick="openAddBoarderModal()">+ إضافة نزيل جديد</button>
+
+      <div class="list-tabs">
+        <button class="tab-btn active" id="tabActiveB" onclick="setBoarderListView('active')">نشط</button>
+        <button class="tab-btn" id="tabArchivedB" onclick="setBoarderListView('archived')">مؤرشف</button>
+      </div>
+
+      <input class="search-box" id="searchBoxB" placeholder="بحث عن نزيل أو مالك..." oninput="renderBoarderList()">
+
+      <div class="trainee-list" id="boarderList"></div>
+    </div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
+    <div id="trainingMain">
     <div class="top-stats" id="topStats"></div>
 
     <div class="welcome" id="welcomeScreen">
@@ -423,7 +458,7 @@
         <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#6B4423"/>
       </svg>
       <h2>اختر متدربًا من القائمة</h2>
-      <p>أو أضف متدربًا جديدًا لبدء تسجيل حضوره وساعاته المتبقية ورسومه.</p>
+      <p>أو أضف متدربًا جديدًا لبدء تسجيل حضوره وحصصه المتبقية ورسومه.</p>
     </div>
 
     <div class="trainee-panel" id="traineePanel">
@@ -445,12 +480,12 @@
             </svg>
             <div class="hs-center">
               <div class="num" id="hsNum">0</div>
-              <div class="lbl">ساعة متبقية</div>
+              <div class="lbl">حصة متبقية</div>
             </div>
           </div>
           <div class="balance-sub">
-            <div>مشترى: <b id="totalPurchased">0</b> س</div>
-            <div>مستخدم: <b id="totalUsed">0</b> س</div>
+            <div>مشترى: <b id="totalPurchased">0</b> حصة</div>
+            <div>مستخدم: <b id="totalUsed">0</b> حصة</div>
           </div>
           <div class="fee-row">
             <div>
@@ -466,7 +501,8 @@
             <h3>تسجيل حضور جديد</h3>
             <div class="form-row">
               <input type="date" id="attDate">
-              <input type="number" id="attHours" placeholder="عدد الساعات" step="0.5" min="0.5" style="max-width:130px;">
+              <input type="time" id="attTime" style="max-width:120px;">
+              <input type="number" id="attHours" placeholder="عدد الحصص" step="1" min="1" style="max-width:130px;">
               <input type="text" id="attNote" placeholder="ملاحظة (اختياري)">
               <button onclick="addAttendance()">تسجيل</button>
             </div>
@@ -479,6 +515,68 @@
         </div>
       </div>
     </div>
+    </div><!-- /trainingMain -->
+
+    <div id="boardingMain" style="display:none;">
+      <div class="top-stats" id="boardingTopStats"></div>
+
+      <div class="welcome" id="boardingWelcomeScreen">
+        <svg class="mark-big" viewBox="0 0 40 40" fill="none">
+          <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#6B4423"/>
+        </svg>
+        <h2>اختر نزيلًا من القائمة</h2>
+        <p>أو أضف نزيلًا جديدًا لتسجيل بيانات المالك والحصان ورسوم الإيواء الشهرية.</p>
+      </div>
+
+      <div class="trainee-panel" id="boarderPanel">
+        <div class="panel-header">
+          <div>
+            <h1 id="pHorseName">—</h1>
+            <div class="sub" id="pOwnerName">—</div>
+          </div>
+          <div class="header-actions" id="boarderPanelActions"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="balance-card">
+            <div style="font-size:13px; color:#8A6A46; margin-bottom:4px;">الرسوم الشهرية</div>
+            <div style="font-family:'Cairo'; font-weight:900; font-size:32px;" id="bMonthlyFee">0 د.ب</div>
+            <div class="fee-row" style="border-top:none; margin-top:14px; padding-top:0;">
+              <div>
+                <div style="font-size:12px;color:#8A6A46;">حالة هذا الشهر</div>
+                <div class="fee-status" id="bMonthStatusText">—</div>
+              </div>
+              <button class="small-btn brass" id="bPayBtn" onclick="recordBoardingPayment()">تسجيل دفعة الشهر</button>
+            </div>
+            <div style="width:100%; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(107,68,35,0.25); font-size:13px; color:#6B4C2F;" id="pBoarderPhoneLine"></div>
+          </div>
+
+          <div class="right-col">
+            <div class="action-card">
+              <h3>سجل المدفوعات</h3>
+              <div class="log-list" id="paymentLogList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add boarder -->
+<div class="modal-overlay" id="addBoarderModal">
+  <div class="modal">
+    <h3>إضافة نزيل إيواء جديد</h3>
+    <div class="form-row">
+      <input type="text" id="newOwnerName" placeholder="اسم مالك الخيل">
+      <input type="text" id="newHorseName" placeholder="اسم الخيل">
+      <input type="text" id="newOwnerPhone" placeholder="رقم الهاتف (اختياري)">
+      <input type="number" id="newMonthlyFee" placeholder="الرسوم الشهرية (د.ب)" step="0.5" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('addBoarderModal')">إلغاء</button>
+      <button class="confirm" onclick="submitAddBoarder()">إضافة</button>
+    </div>
   </div>
 </div>
 
@@ -489,12 +587,27 @@
     <div class="form-row">
       <input type="text" id="newName" placeholder="اسم المتدرب">
       <input type="text" id="newPhone" placeholder="رقم الهاتف (اختياري)">
-      <input type="number" id="newHours" placeholder="عدد الساعات في الباقة" step="0.5" min="0">
+      <input type="number" id="newHours" placeholder="عدد الحصص في الباقة" step="1" min="1">
       <input type="number" id="newFee" placeholder="قيمة الرسوم" step="0.5" min="0">
     </div>
     <div class="modal-actions">
       <button class="cancel" onclick="closeModal('addModal')">إلغاء</button>
       <button class="confirm" onclick="submitAddTrainee()">إضافة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: WhatsApp message editor -->
+<div class="modal-overlay" id="waModal">
+  <div class="modal" style="width:400px;">
+    <h3>تذكير واتساب</h3>
+    <div class="form-row">
+      <div style="font-size:12.5px; color:#8A6A46; margin-bottom:2px;" id="waPhoneLabel">إلى: —</div>
+      <textarea id="waMessageBox" rows="7" style="width:100%; resize:vertical; font-family:'Tajawal'; font-size:13.5px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('waModal')">إلغاء</button>
+      <button class="confirm" style="background:#3FA24A;" onclick="openWhatsAppWithEditedMessage()">📱 فتح واتساب وإرسال</button>
     </div>
   </div>
 </div>
@@ -519,24 +632,18 @@
 <!-- Printable report (hidden on screen) -->
 <div id="printArea"></div>
 
-<!-- Modal: Stable settings -->
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal">
-    <h3>إعدادات الاسطبل</h3>
-    <div class="form-row">
-      <input type="text" id="setStableName" placeholder="اسم الاسطبل">
-      <input type="text" id="setOwnerName" placeholder="اسم المالك">
-      <div style="display:flex; align-items:center; gap:12px; width:100%;">
-        <img id="logoPreview" style="width:56px; height:56px; border-radius:10px; object-fit:cover; border:1.5px solid rgba(107,68,35,0.25); display:none;">
-        <label for="setLogoFile" style="cursor:pointer; flex:1; text-align:center; padding:10px; border:1.5px dashed rgba(107,68,35,0.35); border-radius:9px; font-size:13px; color:#8A6A46;">
-          اختر شعار الاسطبل (صورة)
-        </label>
-        <input type="file" id="setLogoFile" accept="image/*" style="display:none;" onchange="previewLogo(event)">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="cancel" onclick="closeModal('settingsModal')">إلغاء</button>
-      <button class="confirm" onclick="submitSettings()">حفظ</button>
+<!-- Modal: Clear all data confirmation -->
+<div class="modal-overlay" id="clearDataModal">
+  <div class="modal" style="text-align:center;">
+    <div style="font-size:36px; margin-bottom:6px;">⚠️</div>
+    <h3 style="color:var(--rust);">مسح جميع البيانات</h3>
+    <p style="color:#8A6A46; font-size:13.5px; line-height:1.7; margin:0 0 18px;">
+      سيتم حذف كل بيانات المتدربين، الحصص، الحضور، نزلاء الإيواء، والمدفوعات نهائيًا من هذا الجهاز.<br>
+      <b>هذا الإجراء لا يمكن التراجع عنه.</b>
+    </p>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="cancel" onclick="closeModal('clearDataModal')">إلغاء</button>
+      <button class="confirm" style="background:var(--rust);" onclick="executeClearAllData()">نعم، امسح كل شيء</button>
     </div>
   </div>
 </div>
@@ -544,9 +651,9 @@
 <!-- Modal: Renew package -->
 <div class="modal-overlay" id="renewModal">
   <div class="modal">
-    <h3>تجديد باقة الساعات</h3>
+    <h3>تجديد باقة الحصص</h3>
     <div class="form-row">
-      <input type="number" id="renewHours" placeholder="عدد الساعات الجديدة" step="0.5" min="0">
+      <input type="number" id="renewHours" placeholder="عدد الحصص الجديدة" step="1" min="1">
       <input type="number" id="renewFee" placeholder="قيمة الرسوم الجديدة" step="0.5" min="0">
     </div>
     <div class="modal-actions">
@@ -557,11 +664,30 @@
 </div>
 
 <script>
-let DATA = { trainees: [], settings: { stableName:'', ownerName:'', logo:'' } };
+// عدّل هذين الثابتين لكل عميل قبل رفع نسخته الخاصة — لا توجد واجهة إعدادات لتعديلهما من داخل التطبيق
+const STABLE_NAME = 'اسطبلات كلاسيك للفروسية';
+const STABLE_SUBTITLE = 'متابعة حصص المتدربين وإيواء الخيول';
+const OWNER_NAME = ''; // اسم مالك الاسطبل (اختياري) يُستخدم بالتقارير ورسائل واتساب فقط
+
+let DATA = { trainees: [], boarders: [], settings: {} };
 let currentId = null;
-let pendingLogo = null;
+let currentBoarderId = null;
 let viewMode = 'active'; // 'active' | 'archived'
+let boarderViewMode = 'active'; // 'active' | 'archived'
+let appSection = 'training'; // 'training' | 'boarding'
 const STORAGE_KEY = 'stable-data-v1';
+
+function setAppSection(section){
+  appSection = section;
+  document.getElementById('secTraining').classList.toggle('active', section==='training');
+  document.getElementById('secBoarding').classList.toggle('active', section==='boarding');
+  document.getElementById('trainingSidebar').style.display = section==='training' ? 'flex' : 'none';
+  document.getElementById('boardingSidebar').style.display = section==='boarding' ? 'flex' : 'none';
+  document.getElementById('trainingMain').style.display = section==='training' ? 'block' : 'none';
+  document.getElementById('boardingMain').style.display = section==='boarding' ? 'block' : 'none';
+  if(section==='boarding'){ renderBoarderList(); renderBoarderTopStats(); }
+  else { renderTraineeList(); renderTopStats(); }
+}
 
 function setListView(mode){
   viewMode = mode;
@@ -570,25 +696,63 @@ function setListView(mode){
   renderTraineeList();
 }
 
+function setBoarderListView(mode){
+  boarderViewMode = mode;
+  document.getElementById('tabActiveB').classList.toggle('active', mode==='active');
+  document.getElementById('tabArchivedB').classList.toggle('active', mode==='archived');
+  renderBoarderList();
+}
+
 function uid(){ return 't' + Date.now() + Math.random().toString(36).slice(2,7); }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 
 async function loadData(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    if(res && res.value){ DATA = JSON.parse(res.value); }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ DATA = JSON.parse(raw); }
   }catch(e){ DATA = { trainees: [] }; }
-  if(!DATA.settings){ DATA.settings = { stableName:'', ownerName:'', logo:'' }; }
+  if(!DATA.settings){ DATA.settings = {}; }
+  if(!DATA.boarders){ DATA.boarders = []; }
   renderBrand();
   document.getElementById('autoDriveToggle').checked = !!DATA.settings.autoBackupEnabled;
   if(DATA.settings.autoBackupEnabled){ toggleAutoBackup(true); }
   renderAll();
+  renderBoarderTopStats();
 }
 
 async function saveData(){
   try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
-  }catch(e){ console.error('storage save failed', e); }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  }catch(e){ console.error('storage save failed', e); setStatus('فشل الحفظ محليًا — الذاكرة ممتلئة؟', true); }
+}
+
+function clearAllData(){
+  document.getElementById('clearDataModal').classList.add('show');
+}
+
+async function executeClearAllData(){
+  closeModal('clearDataModal');
+
+  DATA = { trainees: [], boarders: [], settings: {} };
+  currentId = null;
+  currentBoarderId = null;
+  localStorage.removeItem(STORAGE_KEY);
+  await saveData();
+
+  viewMode = 'active';
+  boarderViewMode = 'active';
+  document.getElementById('tabActive').classList.add('active');
+  document.getElementById('tabArchived').classList.remove('active');
+  document.getElementById('tabActiveB').classList.add('active');
+  document.getElementById('tabArchivedB').classList.remove('active');
+  document.getElementById('autoDriveToggle').checked = false;
+  if(autoBackupTimer){ clearInterval(autoBackupTimer); autoBackupTimer = null; }
+
+  renderAll();
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+  setStatus('تم مسح جميع البيانات ✓');
 }
 
 function getTrainee(id){ return DATA.trainees.find(t => t.id === id); }
@@ -607,55 +771,8 @@ function feeDue(t){
 }
 
 function renderBrand(){
-  const s = DATA.settings || {};
-  document.getElementById('brandName').textContent = s.stableName || 'سجل الاسطبل';
-  document.getElementById('brandOwner').textContent = s.ownerName ? ('المالك: ' + s.ownerName) : 'إدارة المتدربين والساعات';
-  const logoEl = document.getElementById('brandLogo');
-  const defaultMark = document.getElementById('brandDefaultMark');
-  if(s.logo){
-    logoEl.src = s.logo;
-    logoEl.style.display = 'block';
-    defaultMark.style.display = 'none';
-  } else {
-    logoEl.style.display = 'none';
-    defaultMark.style.display = 'block';
-  }
-}
-
-function openSettingsModal(){
-  const s = DATA.settings || {};
-  document.getElementById('setStableName').value = s.stableName || '';
-  document.getElementById('setOwnerName').value = s.ownerName || '';
-  pendingLogo = s.logo || null;
-  const preview = document.getElementById('logoPreview');
-  if(s.logo){ preview.src = s.logo; preview.style.display='block'; } else { preview.style.display='none'; }
-  document.getElementById('settingsModal').classList.add('show');
-}
-
-function previewLogo(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e){
-    pendingLogo = e.target.result;
-    const preview = document.getElementById('logoPreview');
-    preview.src = pendingLogo;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-async function submitSettings(){
-  const stableName = document.getElementById('setStableName').value.trim();
-  const ownerName = document.getElementById('setOwnerName').value.trim();
-  DATA.settings = {
-    stableName,
-    ownerName,
-    logo: pendingLogo || (DATA.settings ? DATA.settings.logo : '')
-  };
-  closeModal('settingsModal');
-  await saveData();
-  renderBrand();
+  document.getElementById('brandName').textContent = STABLE_NAME;
+  document.getElementById('brandOwner').textContent = STABLE_SUBTITLE;
 }
 
 function renderAll(){
@@ -704,7 +821,7 @@ function renderTopStats(){
       <div class="value">${total}</div>
     </div>
     <div class="stat-card ${lowBalance>0?'warn':''}">
-      <div class="label">رصيد منخفض (≤ 2 س)</div>
+      <div class="label">رصيد منخفض (≤ 2 حصة)</div>
       <div class="value">${lowBalance}</div>
     </div>
     <div class="stat-card">
@@ -739,7 +856,7 @@ function renderTraineeList(){
       <div class="trainee-item ${t.id===currentId?'active':''}" onclick="selectTrainee('${t.id}')">
         <div class="name">${escapeHtml(t.name)}</div>
         <div class="meta">
-          <span>${rem} س متبقية</span>
+          <span>${rem} حصة متبقية</span>
           <span style="display:flex; align-items:center; gap:6px;">
             ${low && t.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendWhatsAppReminder('${t.id}')" title="تذكير واتساب">📱</button>` : ''}
             <span class="pill ${low?'low':'ok'}">${low?'منخفض':(viewMode==='archived'?'مؤرشف':'جيد')}</span>
@@ -774,7 +891,8 @@ function renderTraineePanel(){
     actionsEl.innerHTML = `
       <button class="icon-btn" onclick="openRenewModal()">تجديد باقة</button>
       ${t.phone ? `<button class="icon-btn" style="border-color:#3FA24A; color:#3FA24A;" onclick="sendWhatsAppReminder('${t.id}')">📱 تذكير واتساب</button>` : ''}
-      <button class="icon-btn danger" onclick="archiveTrainee()">أرشفة المتدرب</button>
+      <button class="icon-btn" onclick="archiveTrainee()">أرشفة المتدرب</button>
+      <button class="icon-btn danger" onclick="deleteTrainee()">🗑 حذف نهائي</button>
     `;
   }
 
@@ -806,6 +924,7 @@ function renderTraineePanel(){
   }
 
   document.getElementById('attDate').value = todayStr();
+  document.getElementById('attTime').value = '';
 
   const logList = document.getElementById('logList');
   const sortedLog = t.attendance.slice().sort((a,b)=> b.date.localeCompare(a.date));
@@ -814,9 +933,9 @@ function renderTraineePanel(){
   } else {
     logList.innerHTML = sortedLog.map(a=>`
       <div class="log-entry">
-        <span class="date">${formatDate(a.date)}</span>
+        <span class="date">${formatDate(a.date)}${a.time ? ' · ' + a.time : ''}</span>
         <span class="note">${escapeHtml(a.note||'')}</span>
-        <span class="hrs">${a.hours} س</span>
+        <span class="hrs">${a.hours} حصة</span>
         <button class="del" onclick="deleteAttendance('${a.id}')" title="حذف">✕</button>
       </div>
     `).join('');
@@ -875,7 +994,7 @@ async function submitRenew(){
   if(!t) return;
   const hours = parseFloat(document.getElementById('renewHours').value) || 0;
   const fee = parseFloat(document.getElementById('renewFee').value) || 0;
-  if(hours<=0){ alert('الرجاء إدخال عدد ساعات صحيح'); return; }
+  if(hours<=0){ alert('الرجاء إدخال عدد حصص صحيح'); return; }
   t.packages.push({id:uid(), hours, fee, paid:false, date:todayStr()});
   closeModal('renewModal');
   await saveData();
@@ -894,11 +1013,13 @@ async function addAttendance(){
   const t = getTrainee(currentId);
   if(!t) return;
   const date = document.getElementById('attDate').value || todayStr();
+  const time = document.getElementById('attTime').value || '';
   const hours = parseFloat(document.getElementById('attHours').value);
   const note = document.getElementById('attNote').value.trim();
-  if(!hours || hours<=0){ alert('الرجاء إدخال عدد ساعات صحيح'); return; }
+  if(!hours || hours<=0){ alert('الرجاء إدخال عدد حصص صحيح'); return; }
 
-  t.attendance.push({id:uid(), date, hours, note});
+  t.attendance.push({id:uid(), date, time, hours, note});
+  document.getElementById('attTime').value='';
   document.getElementById('attHours').value='';
   document.getElementById('attNote').value='';
   await saveData();
@@ -954,21 +1075,279 @@ function cleanPhoneForWhatsApp(phone){
   return digits;
 }
 
+let waPendingPhone = null;
+
 function sendWhatsAppReminder(id){
   const t = getTrainee(id);
   if(!t || !t.phone) return;
   const rem = remainingHours(t);
-  const stableName = (DATA.settings && DATA.settings.stableName) || 'الاسطبل';
-  const ownerName = (DATA.settings && DATA.settings.ownerName) || '';
+  const stableName = STABLE_NAME;
+  const ownerName = OWNER_NAME;
   const message =
     `مرحبًا ${t.name}،\n` +
-    `نود تذكيركم بأن رصيدكم من الساعات في ${stableName} على وشك الانتهاء (المتبقي: ${rem} ساعة فقط).\n` +
+    `نود تذكيركم بأن رصيدكم من الحصص في ${stableName} على وشك الانتهاء (المتبقي: ${rem} حصة فقط).\n` +
     `يرجى التواصل معنا لتجديد الاشتراك في أقرب وقت.\n` +
     (ownerName ? `شكرًا لكم — ${ownerName}` : `شكرًا لكم`);
 
-  const phoneDigits = cleanPhoneForWhatsApp(t.phone);
-  const url = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(message)}`;
+  waPendingPhone = cleanPhoneForWhatsApp(t.phone);
+  document.getElementById('waPhoneLabel').textContent = 'إلى: ' + t.phone;
+  document.getElementById('waMessageBox').value = message;
+  document.getElementById('waModal').classList.add('show');
+}
+
+function openWhatsAppWithEditedMessage(){
+  const editedMessage = document.getElementById('waMessageBox').value.trim();
+  if(!editedMessage){ alert('الرسالة فارغة'); return; }
+  const url = `https://wa.me/${waPendingPhone}?text=${encodeURIComponent(editedMessage)}`;
   window.open(url, '_blank');
+  closeModal('waModal');
+}
+
+/* ---------- Boarding (الإيواء) ---------- */
+function getBoarder(id){ return DATA.boarders.find(b => b.id === id); }
+
+function isPaidForMonth(b, monthStr){
+  return b.payments.some(p => p.month === monthStr);
+}
+
+function monthlyBoardingIncome(monthStr){
+  let total = 0;
+  DATA.boarders.forEach(b=>{
+    b.payments.forEach(p=>{
+      if(p.month === monthStr) total += p.amount;
+    });
+  });
+  return Math.round(total*1000)/1000;
+}
+
+function renderBoarderTopStats(){
+  const active = DATA.boarders.filter(b=>!b.archived);
+  const total = active.length;
+  const currentMonth = todayStr().slice(0,7);
+  const overdue = active.filter(b=>!isPaidForMonth(b, currentMonth)).length;
+  const mIncome = monthlyBoardingIncome(currentMonth);
+
+  document.getElementById('boardingTopStats').innerHTML = `
+    <div class="stat-card">
+      <div class="label">إجمالي النزلاء</div>
+      <div class="value">${total}</div>
+    </div>
+    <div class="stat-card ${overdue>0?'warn':''}">
+      <div class="label">رسوم متأخرة هذا الشهر</div>
+      <div class="value">${overdue}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">دخل الإيواء الشهري (د.ب)</div>
+      <div class="value">${mIncome.toFixed(3)}</div>
+    </div>
+  `;
+}
+
+function renderBoarderList(){
+  const q = document.getElementById('searchBoxB').value.trim().toLowerCase();
+  const list = document.getElementById('boarderList');
+  const currentMonth = todayStr().slice(0,7);
+  const filtered = DATA.boarders
+    .slice()
+    .filter(b => boarderViewMode==='archived' ? !!b.archived : !b.archived)
+    .sort((a,b)=>a.horseName.localeCompare(b.horseName,'ar'))
+    .filter(b => (b.horseName+' '+b.ownerName).toLowerCase().includes(q));
+
+  if(filtered.length===0){
+    list.innerHTML = `<div class="empty-list">${boarderViewMode==='archived' ? 'لا يوجد نزلاء مؤرشفون' : 'لا يوجد نزلاء بعد'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(b=>{
+    const overdue = boarderViewMode==='active' && !isPaidForMonth(b, currentMonth);
+    return `
+      <div class="trainee-item ${b.id===currentBoarderId?'active':''}" onclick="selectBoarder('${b.id}')">
+        <div class="name">${escapeHtml(b.horseName)}</div>
+        <div class="meta">
+          <span>${escapeHtml(b.ownerName)}</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            ${overdue && b.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendBoardingReminder('${b.id}')" title="تذكير واتساب">📱</button>` : ''}
+            <span class="pill ${overdue?'low':'ok'}">${overdue?'متأخر':(boarderViewMode==='archived'?'مؤرشف':'مسدد')}</span>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectBoarder(id){
+  currentBoarderId = id;
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+function renderBoarderPanel(){
+  const b = getBoarder(currentBoarderId);
+  if(!b){
+    currentBoarderId = null;
+    document.getElementById('boardingWelcomeScreen').style.display='flex';
+    document.getElementById('boarderPanel').classList.remove('show');
+    return;
+  }
+  document.getElementById('boardingWelcomeScreen').style.display='none';
+  document.getElementById('boarderPanel').classList.add('show');
+
+  document.getElementById('pHorseName').textContent = b.horseName;
+  document.getElementById('pOwnerName').textContent = 'المالك: ' + b.ownerName;
+  document.getElementById('pBoarderPhoneLine').textContent = b.phone ? ('الهاتف: ' + b.phone) : 'لا يوجد رقم هاتف مسجل';
+  document.getElementById('bMonthlyFee').textContent = b.monthlyFee.toFixed(3) + ' د.ب';
+
+  const actionsEl = document.getElementById('boarderPanelActions');
+  if(b.archived){
+    actionsEl.innerHTML = `
+      <button class="icon-btn" onclick="restoreBoarder()">إعادة تنشيط</button>
+      <button class="icon-btn danger" onclick="deleteBoarder()">حذف نهائي</button>
+    `;
+  } else {
+    actionsEl.innerHTML = `
+      ${b.phone ? `<button class="icon-btn" style="border-color:#3FA24A; color:#3FA24A;" onclick="sendBoardingReminder('${b.id}')">📱 تذكير واتساب</button>` : ''}
+      <button class="icon-btn" onclick="archiveBoarder()">أرشفة النزيل</button>
+      <button class="icon-btn danger" onclick="deleteBoarder()">🗑 حذف نهائي</button>
+    `;
+  }
+
+  const currentMonth = todayStr().slice(0,7);
+  const paid = isPaidForMonth(b, currentMonth);
+  const statusEl = document.getElementById('bMonthStatusText');
+  const payBtn = document.getElementById('bPayBtn');
+  if(paid){
+    statusEl.textContent = 'مدفوعة هذا الشهر';
+    statusEl.className = 'fee-status paid';
+    payBtn.style.display = 'none';
+  } else {
+    statusEl.textContent = 'مستحقة الآن';
+    statusEl.className = 'fee-status due';
+    payBtn.style.display = b.archived ? 'none' : 'inline-block';
+  }
+
+  const logList = document.getElementById('paymentLogList');
+  const sorted = b.payments.slice().sort((x,y)=> y.month.localeCompare(x.month));
+  if(sorted.length===0){
+    logList.innerHTML = `<div class="empty-log">لا يوجد سجل مدفوعات بعد</div>`;
+  } else {
+    logList.innerHTML = sorted.map(p=>`
+      <div class="log-entry">
+        <span class="date">${p.month}</span>
+        <span class="note">${formatDate(p.paidDate)}</span>
+        <span class="hrs">${p.amount.toFixed(3)} د.ب</span>
+        <button class="del" onclick="deleteBoardingPayment('${p.id}')" title="حذف">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function openAddBoarderModal(){
+  document.getElementById('newOwnerName').value='';
+  document.getElementById('newHorseName').value='';
+  document.getElementById('newOwnerPhone').value='';
+  document.getElementById('newMonthlyFee').value='';
+  document.getElementById('addBoarderModal').classList.add('show');
+}
+
+async function submitAddBoarder(){
+  const ownerName = document.getElementById('newOwnerName').value.trim();
+  const horseName = document.getElementById('newHorseName').value.trim();
+  const phone = document.getElementById('newOwnerPhone').value.trim();
+  const monthlyFee = parseFloat(document.getElementById('newMonthlyFee').value) || 0;
+  if(!ownerName || !horseName){ alert('الرجاء إدخال اسم المالك واسم الخيل'); return; }
+
+  const boarder = {
+    id: uid(),
+    ownerName, horseName, phone, monthlyFee,
+    payments: [],
+    archived: false
+  };
+  DATA.boarders.push(boarder);
+  closeModal('addBoarderModal');
+  currentBoarderId = boarder.id;
+  await saveData();
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+async function recordBoardingPayment(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  const currentMonth = todayStr().slice(0,7);
+  if(isPaidForMonth(b, currentMonth)) return;
+  b.payments.push({ id: uid(), month: currentMonth, amount: b.monthlyFee, paidDate: todayStr() });
+  await saveData();
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+async function deleteBoardingPayment(paymentId){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  b.payments = b.payments.filter(p=>p.id!==paymentId);
+  await saveData();
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+async function archiveBoarder(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  if(!confirm(`نقل "${b.horseName}" إلى الأرشيف؟`)) return;
+  b.archived = true;
+  currentBoarderId = null;
+  await saveData();
+  boarderViewMode = 'active';
+  document.getElementById('tabActiveB').classList.add('active');
+  document.getElementById('tabArchivedB').classList.remove('active');
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+async function restoreBoarder(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  b.archived = false;
+  await saveData();
+  boarderViewMode = 'active';
+  document.getElementById('tabActiveB').classList.add('active');
+  document.getElementById('tabArchivedB').classList.remove('active');
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+async function deleteBoarder(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  if(!confirm(`حذف "${b.horseName}" نهائيًا؟ لا يمكن التراجع عن هذا الإجراء.`)) return;
+  DATA.boarders = DATA.boarders.filter(x=>x.id!==currentBoarderId);
+  currentBoarderId = null;
+  await saveData();
+  renderBoarderTopStats();
+  renderBoarderList();
+  renderBoarderPanel();
+}
+
+function sendBoardingReminder(id){
+  const b = getBoarder(id);
+  if(!b || !b.phone) return;
+  const stableName = STABLE_NAME;
+  const ownerName = OWNER_NAME;
+  const message =
+    `مرحبًا ${b.ownerName}،\n` +
+    `نود تذكيركم بأن رسوم إيواء الحصان "${b.horseName}" في ${stableName} لهذا الشهر لسا ما وصلتنا (${b.monthlyFee.toFixed(3)} د.ب).\n` +
+    `يرجى التواصل معنا لتسديدها في أقرب وقت.\n` +
+    (ownerName ? `شكرًا لكم — ${ownerName}` : `شكرًا لكم`);
+
+  waPendingPhone = cleanPhoneForWhatsApp(b.phone);
+  document.getElementById('waPhoneLabel').textContent = 'إلى: ' + b.phone;
+  document.getElementById('waMessageBox').value = message;
+  document.getElementById('waModal').classList.add('show');
 }
 
 /* ---------- Tools menu ---------- */
@@ -997,6 +1376,34 @@ async function manualSave(){
   await saveData();
   const now = new Date().toLocaleTimeString('ar-BH', {hour:'2-digit', minute:'2-digit'});
   setStatus('تم الحفظ محليًا — ' + now);
+}
+
+function importJsonBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  if(!confirm('استيراد هذه النسخة سيستبدل كل البيانات الحالية في هذا الجهاز. متابعة؟')){
+    event.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(!imported.trainees){ throw new Error('صيغة غير صحيحة'); }
+      DATA = imported;
+      if(!DATA.settings){ DATA.settings = { stableName:'', ownerName:'', logo:'' }; }
+      currentId = null;
+      await saveData();
+      renderBrand();
+      renderAll();
+      closeToolsMenu();
+      setStatus('تم استيراد النسخة بنجاح ✓');
+    }catch(err){
+      alert('تعذر قراءة الملف. تأكد أنه نسخة JSON صحيحة من هذا التطبيق.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function downloadJsonBackup(){
@@ -1035,7 +1442,7 @@ function toggleAutoBackup(enabled){
 
 async function backupToDriveNow(silent){
   if(!silent) setStatus('جارٍ رفع النسخة الاحتياطية إلى Drive...');
-  const stableName = (DATA.settings && DATA.settings.stableName) || 'الاسطبل';
+  const stableName = STABLE_NAME;
   const fileName = 'karco_stable_backup.json';
   const payload = JSON.stringify(DATA);
 
@@ -1084,7 +1491,7 @@ function getMonthlyAttendance(monthStr){
   DATA.trainees.forEach(t=>{
     t.attendance.forEach(a=>{
       if(a.date.slice(0,7) === monthStr){
-        rows.push({ traineeName: t.name, phone: t.phone||'', date: a.date, hours: a.hours, note: a.note||'' });
+        rows.push({ traineeName: t.name, phone: t.phone||'', date: a.date, time: a.time||'', hours: a.hours, note: a.note||'' });
       }
     });
   });
@@ -1099,24 +1506,35 @@ function exportMonthlyExcel(){
   const summaryRows = DATA.trainees.map(t=>({
     'اسم المتدرب': t.name,
     'الهاتف': t.phone||'',
-    'الساعات المشتراة': totalPurchased(t),
-    'الساعات المستخدمة': totalUsedHours(t),
-    'الساعات المتبقية': remainingHours(t),
+    'الحصص المشتراة': totalPurchased(t),
+    'الحصص المستخدمة': totalUsedHours(t),
+    'الحصص المتبقية': remainingHours(t),
     'الرسوم المستحقة (د.ب)': feeDue(t).toFixed(3)
   }));
 
   const attendanceRows = getMonthlyAttendance(monthStr).map(r=>({
     'التاريخ': r.date,
+    'الوقت': r.time,
     'اسم المتدرب': r.traineeName,
-    'الساعات': r.hours,
+    'الحصص': r.hours,
     'ملاحظة': r.note
   }));
 
   const wb = XLSX.utils.book_new();
   const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
-  const wsAttendance = XLSX.utils.json_to_sheet(attendanceRows.length ? attendanceRows : [{'التاريخ':'','اسم المتدرب':'لا يوجد حضور مسجل هذا الشهر','الساعات':'','ملاحظة':''}]);
+  const wsAttendance = XLSX.utils.json_to_sheet(attendanceRows.length ? attendanceRows : [{'التاريخ':'','الوقت':'','اسم المتدرب':'لا يوجد حضور مسجل هذا الشهر','الحصص':'','ملاحظة':''}]);
   XLSX.utils.book_append_sheet(wb, wsSummary, 'ملخص المتدربين');
   XLSX.utils.book_append_sheet(wb, wsAttendance, 'حضور ' + monthStr);
+
+  const boardingRows = DATA.boarders.map(b=>({
+    'اسم الخيل': b.horseName,
+    'اسم المالك': b.ownerName,
+    'الهاتف': b.phone||'',
+    'الرسوم الشهرية (د.ب)': b.monthlyFee.toFixed(3),
+    ['مدفوعة ' + monthStr]: isPaidForMonth(b, monthStr) ? 'نعم' : 'لا'
+  }));
+  const wsBoarding = XLSX.utils.json_to_sheet(boardingRows.length ? boardingRows : [{'اسم الخيل':'لا يوجد نزلاء مسجلون'}]);
+  XLSX.utils.book_append_sheet(wb, wsBoarding, 'إيواء ' + monthStr);
 
   XLSX.writeFile(wb, `تقرير_${monthStr}.xlsx`);
   closeModal('reportModal');
@@ -1127,22 +1545,21 @@ function printMonthlyReport(){
   const monthStr = document.getElementById('reportMonth').value;
   if(!monthStr){ alert('الرجاء اختيار الشهر'); return; }
 
-  const s = DATA.settings || {};
   const attendance = getMonthlyAttendance(monthStr);
   const today = new Date().toLocaleDateString('ar-BH');
 
   let html = `
     <div class="print-header">
-      ${s.logo ? `<img src="${s.logo}">` : ''}
       <div>
-        <h1>${escapeHtml(s.stableName || 'سجل الاسطبل')}</h1>
-        <div class="meta">المالك: ${escapeHtml(s.ownerName || '—')} · تقرير شهر ${monthStr} · تاريخ الإصدار: ${today}</div>
+        <h1>${escapeHtml(STABLE_NAME)}</h1>
+        <div class="meta">${OWNER_NAME ? ('المالك: ' + escapeHtml(OWNER_NAME) + ' · ') : ''}تقرير شهر ${monthStr} · تاريخ الإصدار: ${today}</div>
       </div>
     </div>
 
+
     <div class="print-section-title">ملخص المتدربين</div>
     <table class="print-table">
-      <tr><th>الاسم</th><th>الهاتف</th><th>ساعات مشتراة</th><th>ساعات مستخدمة</th><th>ساعات متبقية</th><th>رسوم مستحقة (د.ب)</th></tr>
+      <tr><th>الاسم</th><th>الهاتف</th><th>حصص مشتراة</th><th>حصص مستخدمة</th><th>حصص متبقية</th><th>رسوم مستحقة (د.ب)</th></tr>
       ${DATA.trainees.map(t=>`
         <tr>
           <td>${escapeHtml(t.name)}</td>
@@ -1157,15 +1574,16 @@ function printMonthlyReport(){
 
     <div class="print-section-title">سجل الحضور خلال الشهر</div>
     <table class="print-table">
-      <tr><th>التاريخ</th><th>اسم المتدرب</th><th>الساعات</th><th>ملاحظة</th></tr>
+      <tr><th>التاريخ</th><th>الوقت</th><th>اسم المتدرب</th><th>الحصص</th><th>ملاحظة</th></tr>
       ${attendance.length ? attendance.map(r=>`
         <tr>
           <td>${formatDate(r.date)}</td>
+          <td>${r.time || '—'}</td>
           <td>${escapeHtml(r.traineeName)}</td>
           <td>${r.hours}</td>
           <td>${escapeHtml(r.note)}</td>
         </tr>
-      `).join('') : `<tr><td colspan="4">لا يوجد حضور مسجل هذا الشهر</td></tr>`}
+      `).join('') : `<tr><td colspan="5">لا يوجد حضور مسجل هذا الشهر</td></tr>`}
     </table>
   `;
 
