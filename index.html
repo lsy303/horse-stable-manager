@@ -9,21 +9,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --paper:#F2E9D6;
-    --paper-2:#EADFC6;
-    --ink:#2B2118;
-    --leather:#6B4423;
-    --leather-dark:#4A2E17;
-    --hunter:#4A5D3A;
-    --brass:#B8924F;
-    --rust:#A63D33;
-    --card-shadow: 0 2px 0 rgba(43,33,24,0.08), 0 8px 20px -8px rgba(43,33,24,0.25);
+    --paper:#FFFFFF;
+    --paper-2:#F4F6F8;
+    --ink:#1B2733;
+    --leather:#5B8DEF;
+    --leather-dark:#14202B;
+    --hunter:#1F9254;
+    --brass:#85B7EB;
+    --rust:#E24B4A;
+    --card-shadow: 0 2px 0 rgba(27,39,51,0.08), 0 8px 20px -8px rgba(27,39,51,0.20);
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(184,146,79,0.10), transparent 60%),
+      radial-gradient(1200px 600px at 10% -10%, rgba(91,141,239,0.08), transparent 60%),
       var(--paper);
     color:var(--ink);
     font-family:'Tajawal', sans-serif;
@@ -36,11 +36,13 @@
     width:300px;
     flex-shrink:0;
     background:var(--leather-dark);
-    color:#EFE3CC;
+    color:#E7ECF2;
     padding:22px 16px;
     display:flex;
     flex-direction:column;
     gap:16px;
+    position:relative;
+    overflow:hidden;
   }
   .brand{
     font-family:'Cairo', sans-serif;
@@ -58,7 +60,7 @@
   .settings-btn{
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.15);
-    color:#EFE3CC;
+    color:#E7ECF2;
     width:32px; height:32px; flex-shrink:0;
     border-radius:8px;
     cursor:pointer;
@@ -71,7 +73,7 @@
     font-family:'Tajawal';
     font-weight:400;
     font-size:12px;
-    color:#C9B98F;
+    color:#7C8B9C;
     letter-spacing:0;
   }
   .add-trainee-btn{
@@ -86,19 +88,19 @@
     cursor:pointer;
     transition:transform .12s ease, background .15s ease;
   }
-  .add-trainee-btn:hover{background:#CBA65F;}
+  .add-trainee-btn:hover{background:#4A7FE0;}
   .add-trainee-btn:active{transform:scale(0.97);}
   .list-tabs{display:flex; gap:6px;}
   .tab-btn{
     flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-    color:#C9B98F; padding:7px 0; border-radius:9px; font-family:'Tajawal'; font-weight:700;
+    color:#7C8B9C; padding:7px 0; border-radius:9px; font-family:'Tajawal'; font-weight:700;
     font-size:12.5px; cursor:pointer; transition:all .15s ease;
   }
   .tab-btn.active{background:var(--brass); color:var(--leather-dark); border-color:var(--brass);}
   .section-tabs{display:flex; gap:6px; margin-top:2px;}
   .section-tab{
-    flex:1; background:rgba(184,146,79,0.10); border:1px solid rgba(184,146,79,0.25);
-    color:#D9C79B; padding:9px 0; border-radius:10px; font-family:'Cairo'; font-weight:700;
+    flex:1; background:rgba(91,141,239,0.08); border:1px solid rgba(91,141,239,0.25);
+    color:#8C97AA; padding:9px 0; border-radius:10px; font-family:'Cairo'; font-weight:700;
     font-size:13px; cursor:pointer; transition:all .15s ease;
   }
   .section-tab.active{background:var(--brass); color:var(--leather-dark); border-color:var(--brass);}
@@ -110,11 +112,11 @@
     border:1px solid rgba(255,255,255,0.15);
     border-radius:10px;
     padding:9px 12px;
-    color:#EFE3CC;
+    color:#E7ECF2;
     font-family:'Tajawal';
     font-size:14px;
   }
-  .search-box::placeholder{color:#B4A17A;}
+  .search-box::placeholder{color:#7C8B9C;}
   .trainee-list{
     flex:1;
     overflow-y:auto;
@@ -133,27 +135,27 @@
   }
   .trainee-item:hover{background:rgba(255,255,255,0.10);}
   .trainee-item.active{
-    background:rgba(184,146,79,0.18);
+    background:rgba(91,141,239,0.16);
     border-color:var(--brass);
   }
-  .trainee-item .name{font-family:'Cairo'; font-weight:700; font-size:15px; color:#F5EAD2;}
+  .trainee-item .name{font-family:'Cairo'; font-weight:700; font-size:15px; color:#FFFFFF;}
   .trainee-item .meta{
     display:flex; justify-content:space-between; align-items:center;
-    font-size:12.5px; color:#C9B98F; margin-top:4px;
+    font-size:12.5px; color:#7C8B9C; margin-top:4px;
     font-variant-numeric: tabular-nums;
   }
   .pill{
     padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;
   }
-  .pill.low{background:rgba(166,61,51,0.25); color:#F0B5AC;}
-  .pill.ok{background:rgba(74,93,58,0.3); color:#C7DDB4;}
+  .pill.low{background:rgba(226,75,74,0.22); color:#F0B5AC;}
+  .pill.ok{background:rgba(31,146,84,0.22); color:#C7DDB4;}
   .wa-mini{
     background:#3FA24A; border:none; color:#fff; width:20px; height:20px; border-radius:6px;
     font-size:11px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
     padding:0;
   }
   .wa-mini:hover{background:#358f3f;}
-  .empty-list{color:#9C8A66; font-size:13px; text-align:center; padding:24px 8px;}
+  .empty-list{color:#8C97AA; font-size:13px; text-align:center; padding:24px 8px;}
 
   /* Main */
   .main{flex:1; padding:30px 34px; overflow-y:auto;}
@@ -166,7 +168,7 @@
     background:var(--paper-2);
   }
   .inline-status{
-    margin-inline-start:10px; font-size:12px; color:#8A6A46; vertical-align:middle;
+    margin-inline-start:10px; font-size:12px; color:#5B6B7C; vertical-align:middle;
   }
   .tools-menu{
     display:none;
@@ -175,7 +177,7 @@
     left:0;
     min-width:230px;
     background:var(--paper);
-    border:1px solid rgba(107,68,35,0.2);
+    border:1px solid rgba(27,39,51,0.14);
     border-radius:12px;
     box-shadow:0 12px 30px -8px rgba(0,0,0,0.5);
     padding:8px;
@@ -192,20 +194,20 @@
     padding:9px 12px; border-radius:8px; font-family:'Tajawal'; font-size:13.5px;
     cursor:pointer; width:100%; display:flex; align-items:center; gap:8px;
   }
-  .menu-item:hover{background:rgba(107,68,35,0.08);}
+  .menu-item:hover{background:rgba(27,39,51,0.06);}
   .toolbar-group{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
   .tb-btn{
     background:transparent; border:1.5px solid var(--leather); color:var(--leather);
     padding:7px 13px; border-radius:8px; font-family:'Tajawal'; font-weight:700; font-size:13px;
     cursor:pointer; transition:all .15s ease; white-space:nowrap;
   }
-  .tb-btn:hover{background:var(--leather); color:#F5EAD2;}
+  .tb-btn:hover{background:var(--leather); color:#FFFFFF;}
   .auto-toggle{
     display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--ink);
     user-select:none;
   }
   .auto-toggle input{accent-color:var(--brass); width:15px; height:15px; cursor:pointer;}
-  .toolbar-status{font-size:11.5px; color:#8A6A46;}
+  .toolbar-status{font-size:11.5px; color:#5B6B7C;}
 
   .top-stats{
     display:grid;
@@ -218,7 +220,7 @@
     border-radius:14px;
     padding:16px 18px;
     box-shadow:var(--card-shadow);
-    border:1px solid rgba(107,68,35,0.12);
+    border:1px solid rgba(27,39,51,0.10);
   }
   .stat-card .label{font-size:12.5px; color:var(--leather); font-weight:700;}
   .stat-card .value{
@@ -233,7 +235,7 @@
   }
   .welcome .mark-big{width:90px; height:90px; opacity:.55; margin-bottom:14px;}
   .welcome h2{font-family:'Cairo'; margin:0 0 6px;}
-  .welcome p{margin:0; color:#8A6A46; max-width:360px;}
+  .welcome p{margin:0; color:#5B6B7C; max-width:360px;}
 
   .trainee-panel{display:none; flex-direction:column; gap:22px;}
   .trainee-panel.show{display:flex;}
@@ -244,17 +246,17 @@
     border-radius:16px;
     padding:22px 24px;
     box-shadow:var(--card-shadow);
-    border:1px solid rgba(107,68,35,0.12);
+    border:1px solid rgba(27,39,51,0.10);
   }
   .panel-header h1{font-family:'Cairo'; font-weight:900; font-size:26px; margin:0 0 4px;}
-  .panel-header .sub{color:#8A6A46; font-size:13.5px;}
+  .panel-header .sub{color:#5B6B7C; font-size:13.5px;}
   .header-actions{display:flex; gap:8px;}
   .icon-btn{
     background:transparent; border:1.5px solid var(--leather); color:var(--leather);
     padding:8px 14px; border-radius:9px; font-family:'Tajawal'; font-weight:700; font-size:13.5px;
     cursor:pointer; transition:all .15s ease;
   }
-  .icon-btn:hover{background:var(--leather); color:#F5EAD2;}
+  .icon-btn:hover{background:var(--leather); color:#FFFFFF;}
   .icon-btn.danger{border-color:var(--rust); color:var(--rust);}
   .icon-btn.danger:hover{background:var(--rust); color:#fff;}
 
@@ -262,7 +264,7 @@
 
   .balance-card{
     background:var(--paper-2); border-radius:16px; padding:22px; box-shadow:var(--card-shadow);
-    border:1px solid rgba(107,68,35,0.12);
+    border:1px solid rgba(27,39,51,0.10);
     display:flex; flex-direction:column; align-items:center; gap:12px;
   }
   .horseshoe-wrap{position:relative; width:190px; height:190px;}
@@ -271,21 +273,21 @@
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; top:14px;
   }
   .hs-center .num{font-family:'Cairo'; font-weight:900; font-size:34px; font-variant-numeric: tabular-nums;}
-  .hs-center .lbl{font-size:12px; color:#8A6A46; margin-top:-2px;}
+  .hs-center .lbl{font-size:12px; color:#5B6B7C; margin-top:-2px;}
   .balance-sub{
-    display:flex; gap:18px; font-size:13px; color:#6B4C2F; font-variant-numeric: tabular-nums;
+    display:flex; gap:18px; font-size:13px; color:#5B6B7C; font-variant-numeric: tabular-nums;
   }
   .balance-sub b{color:var(--ink);}
 
   .fee-row{
-    width:100%; margin-top:6px; padding-top:14px; border-top:1px dashed rgba(107,68,35,0.25);
+    width:100%; margin-top:6px; padding-top:14px; border-top:1px dashed rgba(27,39,51,0.16);
     display:flex; justify-content:space-between; align-items:center;
   }
   .fee-status{font-family:'Cairo'; font-weight:700; font-size:14px;}
   .fee-status.paid{color:var(--hunter);}
   .fee-status.due{color:var(--rust);}
   .small-btn{
-    background:var(--hunter); color:#EFE9D9; border:none; padding:6px 12px; border-radius:8px;
+    background:var(--hunter); color:#FFFFFF; border:none; padding:6px 12px; border-radius:8px;
     font-size:12.5px; font-weight:700; cursor:pointer; font-family:'Tajawal';
   }
   .small-btn:hover{opacity:.9;}
@@ -295,18 +297,18 @@
 
   .action-card{
     background:var(--paper-2); border-radius:16px; padding:20px; box-shadow:var(--card-shadow);
-    border:1px solid rgba(107,68,35,0.12);
+    border:1px solid rgba(27,39,51,0.10);
   }
   .action-card h3{font-family:'Cairo'; margin:0 0 12px; font-size:16px;}
   .form-row{display:flex; gap:10px; flex-wrap:wrap;}
   .form-row input, .form-row textarea{
     font-family:'Tajawal'; font-size:14px; padding:9px 12px; border-radius:9px;
-    border:1.5px solid rgba(107,68,35,0.25); background:#FBF6E9; color:var(--ink);
+    border:1.5px solid rgba(27,39,51,0.16); background:#F4F6F8; color:var(--ink);
     flex:1; min-width:120px;
   }
   .form-row input:focus, .form-row textarea:focus{outline:none; border-color:var(--brass);}
   .form-row button{
-    background:var(--leather); color:#F5EAD2; border:none; padding:9px 18px; border-radius:9px;
+    background:var(--leather); color:#FFFFFF; border:none; padding:9px 18px; border-radius:9px;
     font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:14px;
   }
   .form-row button:hover{background:var(--leather-dark);}
@@ -314,22 +316,22 @@
   .log-list{display:flex; flex-direction:column; gap:0; max-height:340px; overflow-y:auto;}
   .log-entry{
     display:flex; justify-content:space-between; align-items:center;
-    padding:11px 4px; border-bottom:1px solid rgba(107,68,35,0.12);
+    padding:11px 4px; border-bottom:1px solid rgba(27,39,51,0.10);
     font-size:13.5px;
   }
   .log-entry:last-child{border-bottom:none;}
   .log-entry .date{font-weight:700; font-variant-numeric: tabular-nums; min-width:95px;}
-  .log-entry .note{color:#8A6A46; flex:1; margin:0 10px; font-size:12.5px;}
+  .log-entry .note{color:#5B6B7C; flex:1; margin:0 10px; font-size:12.5px;}
   .log-entry .hrs{font-variant-numeric: tabular-nums; font-weight:700; color:var(--leather);}
   .log-entry .del{
     background:none; border:none; color:var(--rust); cursor:pointer; font-size:16px; padding:0 4px;
     opacity:.55;
   }
   .log-entry .del:hover{opacity:1;}
-  .empty-log{color:#9C8A66; font-size:13px; text-align:center; padding:18px 0;}
+  .empty-log{color:#8C97AA; font-size:13px; text-align:center; padding:18px 0;}
 
   .modal-overlay{
-    position:fixed; inset:0; background:rgba(43,33,24,0.55); display:none;
+    position:fixed; inset:0; background:rgba(20,32,43,0.60); display:none;
     align-items:center; justify-content:center; z-index:50;
   }
   .modal-overlay.show{display:flex;}
@@ -344,11 +346,11 @@
   .modal-actions button{
     padding:9px 16px; border-radius:9px; border:none; font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:13.5px;
   }
-  .modal-actions .cancel{background:transparent; border:1.5px solid #8A6A46; color:#8A6A46;}
-  .modal-actions .confirm{background:var(--leather); color:#F5EAD2;}
+  .modal-actions .cancel{background:transparent; border:1.5px solid #5B6B7C; color:#5B6B7C;}
+  .modal-actions .confirm{background:var(--leather); color:#FFFFFF;}
 
   ::-webkit-scrollbar{width:7px;}
-  ::-webkit-scrollbar-thumb{background:rgba(107,68,35,0.3); border-radius:10px;}
+  ::-webkit-scrollbar-thumb{background:rgba(27,39,51,0.20); border-radius:10px;}
 
   @media (max-width: 860px){
     .app{flex-direction:column;}
@@ -365,13 +367,13 @@
       display:block; position:absolute; top:0; right:0; left:0;
       padding:20px; background:#fff; color:#000;
     }
-    .print-header{display:flex; align-items:center; gap:14px; border-bottom:3px solid #6B4423; padding-bottom:12px; margin-bottom:16px;}
+    .print-header{display:flex; align-items:center; gap:14px; border-bottom:3px solid #5B8DEF; padding-bottom:12px; margin-bottom:16px;}
     .print-header img{width:54px; height:54px; border-radius:8px; object-fit:cover;}
     .print-header h1{font-family:'Cairo', sans-serif; font-size:20px; margin:0;}
     .print-header .meta{font-size:12px; color:#555;}
     .print-table{width:100%; border-collapse:collapse; font-size:12px; margin-bottom:18px;}
     .print-table th, .print-table td{border:1px solid #ccc; padding:6px 8px; text-align:right;}
-    .print-table th{background:#EADFC6;}
+    .print-table th{background:#F4F6F8;}
     .print-section-title{font-family:'Cairo', sans-serif; font-weight:700; font-size:14px; margin:16px 0 8px;}
   }
 </style>
@@ -381,9 +383,26 @@
 <div class="app">
   <!-- SIDEBAR -->
   <div class="sidebar">
+    <svg width="140" height="140" viewBox="0 0 100 100" style="position:absolute; left:-14px; bottom:-14px; opacity:0.07; pointer-events:none;">
+      <g fill="#5B8DEF">
+        <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
+        <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
+        <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
+        <path d="M52,48 C64,50 74,58 78,68 C68,66 58,60 54,54 Z"/>
+        <path d="M52,60 C62,64 70,74 72,86 C62,80 54,72 50,64 Z"/>
+        <path d="M46,70 C52,78 56,88 54,98 C46,90 42,80 42,70 Z"/>
+      </g>
+    </svg>
     <div class="brand" id="brandBlock">
-      <svg class="mark" viewBox="0 0 40 40" fill="none">
-        <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#B8924F"/>
+      <svg class="mark" viewBox="0 0 100 100">
+        <g fill="#5B8DEF">
+          <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
+          <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
+          <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
+          <path d="M52,48 C64,50 74,58 78,68 C68,66 58,60 54,54 Z"/>
+          <path d="M52,60 C62,64 70,74 72,86 C62,80 54,72 50,64 Z"/>
+          <path d="M46,70 C52,78 56,88 54,98 C46,90 42,80 42,70 Z"/>
+        </g>
       </svg>
       <div style="flex:1;">
         <span id="brandName">اسطبلات كلاسيك للفروسية</span>
@@ -447,8 +466,15 @@
     <div class="top-stats" id="topStats"></div>
 
     <div class="welcome" id="welcomeScreen">
-      <svg class="mark-big" viewBox="0 0 40 40" fill="none">
-        <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#6B4423"/>
+      <svg class="mark-big" viewBox="0 0 100 100">
+        <g fill="#5B8DEF">
+          <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
+          <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
+          <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
+          <path d="M52,48 C64,50 74,58 78,68 C68,66 58,60 54,54 Z"/>
+          <path d="M52,60 C62,64 70,74 72,86 C62,80 54,72 50,64 Z"/>
+          <path d="M46,70 C52,78 56,88 54,98 C46,90 42,80 42,70 Z"/>
+        </g>
       </svg>
       <h2>اختر متدربًا من القائمة</h2>
       <p>أو أضف متدربًا جديدًا لبدء تسجيل حضوره وحصصه المتبقية ورسومه.</p>
@@ -467,8 +493,8 @@
         <div class="balance-card">
           <div class="horseshoe-wrap">
             <svg viewBox="0 0 200 200">
-              <path d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#E3D5B0" stroke-width="16" stroke-linecap="round"/>
-              <path id="hsProgress" d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#B8924F" stroke-width="16" stroke-linecap="round"
+              <path d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#DDE6F5" stroke-width="16" stroke-linecap="round"/>
+              <path id="hsProgress" d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#5B8DEF" stroke-width="16" stroke-linecap="round"
                 stroke-dasharray="330" stroke-dashoffset="330"/>
             </svg>
             <div class="hs-center">
@@ -482,7 +508,7 @@
           </div>
           <div class="fee-row">
             <div>
-              <div style="font-size:12px;color:#8A6A46;">الرسوم المستحقة</div>
+              <div style="font-size:12px;color:#5B6B7C;">الرسوم المستحقة</div>
               <div class="fee-status" id="feeStatusText">—</div>
             </div>
             <button class="small-btn brass" id="feeToggleBtn" onclick="toggleFeePaid()">تحديد كمدفوع</button>
@@ -514,8 +540,15 @@
       <div class="top-stats" id="boardingTopStats"></div>
 
       <div class="welcome" id="boardingWelcomeScreen">
-        <svg class="mark-big" viewBox="0 0 40 40" fill="none">
-          <path d="M20 4c-7 0-11 5.5-11 12.5 0 6 2.8 9.5 2.8 13.5 0 2.7-1.3 4-1.3 4h5.4s.9-1.6.9-4.2c0-3.3-1.6-5.7-1.6-9.8 0-5 2.5-8.5 6.8-8.5s6.8 3.5 6.8 8.5c0 4.1-1.6 6.5-1.6 9.8 0 2.6.9 4.2.9 4.2h5.4s-1.3-1.3-1.3-4c0-4 2.8-7.5 2.8-13.5C31 9.5 27 4 20 4z" fill="#6B4423"/>
+        <svg class="mark-big" viewBox="0 0 100 100">
+          <g fill="#5B8DEF">
+            <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
+            <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
+            <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
+            <path d="M52,48 C64,50 74,58 78,68 C68,66 58,60 54,54 Z"/>
+            <path d="M52,60 C62,64 70,74 72,86 C62,80 54,72 50,64 Z"/>
+            <path d="M46,70 C52,78 56,88 54,98 C46,90 42,80 42,70 Z"/>
+          </g>
         </svg>
         <h2>اختر نزيلًا من القائمة</h2>
         <p>أو أضف نزيلًا جديدًا لتسجيل بيانات المالك والحصان ورسوم الإيواء الشهرية.</p>
@@ -532,16 +565,16 @@
 
         <div class="grid-2">
           <div class="balance-card">
-            <div style="font-size:13px; color:#8A6A46; margin-bottom:4px;">الرسوم الشهرية</div>
+            <div style="font-size:13px; color:#5B6B7C; margin-bottom:4px;">الرسوم الشهرية</div>
             <div style="font-family:'Cairo'; font-weight:900; font-size:32px;" id="bMonthlyFee">0 د.ب</div>
             <div class="fee-row" style="border-top:none; margin-top:14px; padding-top:0;">
               <div>
-                <div style="font-size:12px;color:#8A6A46;">حالة هذا الشهر</div>
+                <div style="font-size:12px;color:#5B6B7C;">حالة هذا الشهر</div>
                 <div class="fee-status" id="bMonthStatusText">—</div>
               </div>
               <button class="small-btn brass" id="bPayBtn" onclick="recordBoardingPayment()">تسجيل دفعة الشهر</button>
             </div>
-            <div style="width:100%; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(107,68,35,0.25); font-size:13px; color:#6B4C2F;" id="pBoarderPhoneLine"></div>
+            <div style="width:100%; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(27,39,51,0.16); font-size:13px; color:#5B6B7C;" id="pBoarderPhoneLine"></div>
           </div>
 
           <div class="right-col">
@@ -595,7 +628,7 @@
   <div class="modal" style="width:400px;">
     <h3>تذكير واتساب</h3>
     <div class="form-row">
-      <div style="font-size:12.5px; color:#8A6A46; margin-bottom:2px;" id="waPhoneLabel">إلى: —</div>
+      <div style="font-size:12.5px; color:#5B6B7C; margin-bottom:2px;" id="waPhoneLabel">إلى: —</div>
       <textarea id="waMessageBox" rows="7" style="width:100%; resize:vertical; font-family:'Tajawal'; font-size:13.5px;"></textarea>
     </div>
     <div class="modal-actions">
@@ -630,7 +663,7 @@
   <div class="modal" style="text-align:center;">
     <div style="font-size:36px; margin-bottom:6px;">⚠️</div>
     <h3 style="color:var(--rust);">مسح جميع البيانات</h3>
-    <p style="color:#8A6A46; font-size:13.5px; line-height:1.7; margin:0 0 18px;">
+    <p style="color:#5B6B7C; font-size:13.5px; line-height:1.7; margin:0 0 18px;">
       سيتم حذف كل بيانات المتدربين، الحصص، الحضور، نزلاء الإيواء، والمدفوعات نهائيًا من هذا الجهاز.<br>
       <b>هذا الإجراء لا يمكن التراجع عنه.</b>
     </p>
@@ -894,7 +927,7 @@ function renderTraineePanel(){
 
   document.getElementById('hsNum').textContent = rem;
   document.getElementById('hsProgress').style.strokeDashoffset = offset;
-  document.getElementById('hsProgress').style.stroke = rem <= 2 ? '#A63D33' : '#B8924F';
+  document.getElementById('hsProgress').style.stroke = rem <= 2 ? '#E24B4A' : '#5B8DEF';
   document.getElementById('totalPurchased').textContent = purchased;
   document.getElementById('totalUsed').textContent = used;
 
@@ -1355,7 +1388,7 @@ document.addEventListener('click', function(e){
 
 /* ---------- Save / Backup ---------- */
 function setStatus(msg, isError){
-  const color = isError ? '#A63D33' : '#8A6A46';
+  const color = isError ? '#E24B4A' : '#5B6B7C';
   const el = document.getElementById('toolbarStatus');
   if(el){ el.textContent = msg; el.style.color = color; }
 }
