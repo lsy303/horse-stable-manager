@@ -401,13 +401,6 @@
           <button class="menu-item" onclick="document.getElementById('importFileInput').click();">⬆ استيراد نسخة</button>
           <input type="file" id="importFileInput" accept="application/json" style="display:none;" onchange="importJsonBackup(event)">
 
-          <div class="menu-section-label">Google Drive</div>
-          <button class="menu-item" onclick="closeToolsMenu(); backupToDriveNow();">☁ نسخ إلى Drive الآن</button>
-          <label class="auto-toggle menu-item" style="cursor:pointer;">
-            <input type="checkbox" id="autoDriveToggle" onchange="toggleAutoBackup(this.checked)">
-            نسخ تلقائي على Drive
-          </label>
-
           <div class="menu-section-label">إعادة ضبط</div>
           <button class="menu-item" style="color:var(--rust);" onclick="closeToolsMenu(); clearAllData();">🗑 مسح جميع البيانات</button>
 
@@ -714,8 +707,6 @@ async function loadData(){
   if(!DATA.settings){ DATA.settings = {}; }
   if(!DATA.boarders){ DATA.boarders = []; }
   renderBrand();
-  document.getElementById('autoDriveToggle').checked = !!DATA.settings.autoBackupEnabled;
-  if(DATA.settings.autoBackupEnabled){ toggleAutoBackup(true); }
   renderAll();
   renderBoarderTopStats();
 }
@@ -745,8 +736,6 @@ async function executeClearAllData(){
   document.getElementById('tabArchived').classList.remove('active');
   document.getElementById('tabActiveB').classList.add('active');
   document.getElementById('tabArchivedB').classList.remove('active');
-  document.getElementById('autoDriveToggle').checked = false;
-  if(autoBackupTimer){ clearInterval(autoBackupTimer); autoBackupTimer = null; }
 
   renderAll();
   renderBoarderTopStats();
@@ -1416,66 +1405,6 @@ function downloadJsonBackup(){
   a.click();
   URL.revokeObjectURL(url);
   setStatus('تم تنزيل نسخة JSON');
-}
-
-let autoBackupTimer = null;
-let lastBackupSnapshot = null;
-
-function toggleAutoBackup(enabled){
-  DATA.settings = DATA.settings || {};
-  DATA.settings.autoBackupEnabled = enabled;
-  saveData();
-  if(enabled){
-    setStatus('تفعيل النسخ التلقائي على Drive');
-    if(autoBackupTimer) clearInterval(autoBackupTimer);
-    autoBackupTimer = setInterval(()=>{
-      const snap = JSON.stringify(DATA);
-      if(snap !== lastBackupSnapshot){
-        backupToDriveNow(true);
-      }
-    }, 5 * 60 * 1000); // كل 5 دقائق، فقط إذا تغيرت البيانات
-  } else {
-    if(autoBackupTimer){ clearInterval(autoBackupTimer); autoBackupTimer = null; }
-    setStatus('تم إيقاف النسخ التلقائي');
-  }
-}
-
-async function backupToDriveNow(silent){
-  if(!silent) setStatus('جارٍ رفع النسخة الاحتياطية إلى Drive...');
-  const stableName = STABLE_NAME;
-  const fileName = 'karco_stable_backup.json';
-  const payload = JSON.stringify(DATA);
-
-  try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{
-          role: "user",
-          content: `Create or update (overwrite if it already exists) a file named "${fileName}" in the root of my Google Drive. The file should contain exactly this JSON content (a backup of "${stableName}" trainee records), with no modification:\n\n${payload}`
-        }],
-        mcp_servers: [{
-          type: "url",
-          url: "https://drivemcp.googleapis.com/mcp/v1",
-          name: "google-drive-mcp"
-        }]
-      })
-    });
-    const data = await response.json();
-    const toolUsed = (data.content || []).some(b => b.type === 'mcp_tool_use');
-    if(toolUsed){
-      lastBackupSnapshot = payload;
-      setStatus('تم النسخ الاحتياطي على Drive بنجاح ✓');
-    } else {
-      setStatus('تعذر تأكيد الرفع على Drive — تحقق من ربط الحساب', true);
-    }
-  } catch(e){
-    console.error(e);
-    setStatus('فشل الاتصال بـ Drive', true);
-  }
 }
 
 /* ---------- Monthly Reports ---------- */
