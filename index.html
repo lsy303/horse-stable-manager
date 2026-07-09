@@ -9,13 +9,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --paper:#FFFFFF;
-    --paper-2:#F4F6F8;
+    --paper:#F5F1E8;
+    --paper-2:#FFFFFF;
     --ink:#1B2733;
-    --leather:#5B8DEF;
-    --leather-dark:#28405A;
+    --leather:#8A6B35;
+    --leather-dark:#0F1F33;
     --hunter:#1F9254;
-    --brass:#85B7EB;
+    --brass:#E3C88A;
     --rust:#E24B4A;
     --card-shadow: 0 2px 0 rgba(27,39,51,0.08), 0 8px 20px -8px rgba(27,39,51,0.20);
   }
@@ -23,7 +23,7 @@
   body{
     margin:0;
     background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(91,141,239,0.08), transparent 60%),
+      radial-gradient(1200px 600px at 10% -10%, rgba(201,161,90,0.08), transparent 60%),
       var(--paper);
     color:var(--ink);
     font-family:'Tajawal', sans-serif;
@@ -73,7 +73,7 @@
     font-family:'Tajawal';
     font-weight:400;
     font-size:14px;
-    color:#7C8B9C;
+    color:#8FA3BE;
     letter-spacing:0;
   }
   .add-trainee-btn{
@@ -88,19 +88,19 @@
     cursor:pointer;
     transition:transform .12s ease, background .15s ease;
   }
-  .add-trainee-btn:hover{background:#4A7FE0;}
+  .add-trainee-btn:hover{background:var(--leather-dark); color:#FFFFFF;}
   .add-trainee-btn:active{transform:scale(0.97);}
   .list-tabs{display:flex; gap:6px;}
   .tab-btn{
     flex:1; background:rgba(255,255,255,0.06); border:1.5px solid #FFFFFF;
-    color:#7C8B9C; padding:7px 0; border-radius:9px; font-family:'Tajawal'; font-weight:700;
+    color:#8FA3BE; padding:7px 0; border-radius:9px; font-family:'Tajawal'; font-weight:700;
     font-size:14.5px; cursor:pointer; transition:all .15s ease;
   }
   .tab-btn.active{background:var(--brass); color:var(--leather-dark); border-color:#FFFFFF;}
   .section-tabs{display:flex; gap:6px; margin-top:2px;}
   .section-tab{
-    flex:1; background:rgba(91,141,239,0.08); border:1.5px solid #FFFFFF;
-    color:#8C97AA; padding:9px 0; border-radius:10px; font-family:'Cairo'; font-weight:700;
+    flex:1; background:rgba(201,161,90,0.08); border:1.5px solid #FFFFFF;
+    color:#A69B87; padding:9px 0; border-radius:10px; font-family:'Cairo'; font-weight:700;
     font-size:15px; cursor:pointer; transition:all .15s ease;
   }
   .section-tab.active{background:var(--brass); color:var(--leather-dark); border-color:#FFFFFF;}
@@ -116,7 +116,7 @@
     font-family:'Tajawal';
     font-size:16px;
   }
-  .search-box::placeholder{color:#7C8B9C;}
+  .search-box::placeholder{color:#8FA3BE;}
   .trainee-list{
     flex:1;
     overflow-y:auto;
@@ -135,13 +135,13 @@
   }
   .trainee-item:hover{background:rgba(255,255,255,0.10);}
   .trainee-item.active{
-    background:rgba(91,141,239,0.16);
+    background:rgba(201,161,90,0.16);
     border-color:var(--brass);
   }
   .trainee-item .name{font-family:'Cairo'; font-weight:700; font-size:17px; color:#FFFFFF;}
   .trainee-item .meta{
     display:flex; justify-content:space-between; align-items:center;
-    font-size:14.5px; color:#7C8B9C; margin-top:4px;
+    font-size:14.5px; color:#8FA3BE; margin-top:4px;
     font-variant-numeric: tabular-nums;
   }
   .pill{
@@ -155,7 +155,7 @@
     padding:0;
   }
   .wa-mini:hover{background:#358f3f;}
-  .empty-list{color:#8C97AA; font-size:15px; text-align:center; padding:24px 8px;}
+  .empty-list{color:#A69B87; font-size:15px; text-align:center; padding:24px 8px;}
 
   /* Main */
   .main{flex:1; padding:30px 34px; overflow-y:auto;}
@@ -168,7 +168,7 @@
     background:var(--paper-2);
   }
   .inline-status{
-    margin-inline-start:10px; font-size:14px; color:#5B6B7C; vertical-align:middle;
+    margin-inline-start:10px; font-size:14px; color:#6B6355; vertical-align:middle;
   }
   .tools-menu{
     display:none;
@@ -186,7 +186,7 @@
   }
   .tools-menu.show{display:flex;}
   .menu-section-label{
-    font-size:13px; font-weight:700; color:var(--brass); text-transform:uppercase;
+    font-size:13px; font-weight:700; color:#A17F3E; text-transform:uppercase;
     padding:8px 12px 3px;
   }
   .menu-item{
@@ -207,7 +207,7 @@
     user-select:none;
   }
   .auto-toggle input{accent-color:var(--brass); width:15px; height:15px; cursor:pointer;}
-  .toolbar-status{font-size:13.5px; color:#5B6B7C;}
+  .toolbar-status{font-size:13.5px; color:#6B6355;}
 
   .top-stats{
     display:grid;
@@ -235,13 +235,14 @@
   }
   .welcome .mark-big{width:90px; height:90px; opacity:.55; margin-bottom:14px;}
   .welcome h2{font-family:'Cairo'; margin:0 0 6px;}
-  .welcome p{margin:0; color:#5B6B7C; max-width:360px;}
+  .welcome p{margin:0; color:#6B6355; max-width:360px;}
 
   .trainee-panel{display:none; flex-direction:column; gap:22px;}
   .trainee-panel.show{display:flex;}
 
   .panel-header{
     display:flex; justify-content:space-between; align-items:flex-start;
+    flex-wrap:wrap; gap:12px;
     background:var(--paper-2);
     border-radius:16px;
     padding:22px 24px;
@@ -249,8 +250,8 @@
     border:1px solid rgba(27,39,51,0.10);
   }
   .panel-header h1{font-family:'Cairo'; font-weight:900; font-size:28px; margin:0 0 4px;}
-  .panel-header .sub{color:#5B6B7C; font-size:15.5px;}
-  .header-actions{display:flex; gap:8px;}
+  .panel-header .sub{color:#6B6355; font-size:15.5px;}
+  .header-actions{display:flex; gap:8px; flex-wrap:wrap;}
   .icon-btn{
     background:transparent; border:1.5px solid var(--leather); color:var(--leather);
     padding:8px 14px; border-radius:9px; font-family:'Tajawal'; font-weight:700; font-size:15.5px;
@@ -273,9 +274,9 @@
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; top:14px;
   }
   .hs-center .num{font-family:'Cairo'; font-weight:900; font-size:36px; font-variant-numeric: tabular-nums;}
-  .hs-center .lbl{font-size:14px; color:#5B6B7C; margin-top:-2px;}
+  .hs-center .lbl{font-size:14px; color:#6B6355; margin-top:-2px;}
   .balance-sub{
-    display:flex; gap:18px; font-size:15px; color:#5B6B7C; font-variant-numeric: tabular-nums;
+    display:flex; gap:18px; font-size:15px; color:#6B6355; font-variant-numeric: tabular-nums;
   }
   .balance-sub b{color:var(--ink);}
 
@@ -301,12 +302,12 @@
   }
   .action-card h3{font-family:'Cairo'; margin:0 0 12px; font-size:16px;}
   .form-row{display:flex; gap:10px; flex-wrap:wrap;}
-  .form-row input, .form-row textarea{
+  .form-row input, .form-row textarea, .form-row select{
     font-family:'Tajawal'; font-size:16px; padding:9px 12px; border-radius:9px;
-    border:1.5px solid rgba(27,39,51,0.16); background:#F4F6F8; color:var(--ink);
+    border:1.5px solid rgba(27,39,51,0.16); background:#F0E9D6; color:var(--ink);
     flex:1; min-width:120px;
   }
-  .form-row input:focus, .form-row textarea:focus{outline:none; border-color:var(--brass);}
+  .form-row input:focus, .form-row textarea:focus, .form-row select:focus{outline:none; border-color:var(--brass);}
   .form-row button{
     background:var(--leather); color:#FFFFFF; border:none; padding:9px 18px; border-radius:9px;
     font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:16px;
@@ -321,14 +322,14 @@
   }
   .log-entry:last-child{border-bottom:none;}
   .log-entry .date{font-weight:700; font-variant-numeric: tabular-nums; min-width:95px;}
-  .log-entry .note{color:#5B6B7C; flex:1; margin:0 10px; font-size:14.5px;}
+  .log-entry .note{color:#6B6355; flex:1; margin:0 10px; font-size:14.5px;}
   .log-entry .hrs{font-variant-numeric: tabular-nums; font-weight:700; color:var(--leather);}
   .log-entry .del{
     background:none; border:none; color:var(--rust); cursor:pointer; font-size:16px; padding:0 4px;
     opacity:.55;
   }
   .log-entry .del:hover{opacity:1;}
-  .empty-log{color:#8C97AA; font-size:15px; text-align:center; padding:18px 0;}
+  .empty-log{color:#A69B87; font-size:15px; text-align:center; padding:18px 0;}
 
   .modal-overlay{
     position:fixed; inset:0; background:rgba(20,32,43,0.60); display:none;
@@ -341,12 +342,12 @@
   }
   .modal h3{font-family:'Cairo'; margin:0 0 16px;}
   .modal .form-row{flex-direction:column;}
-  .modal .form-row input{width:100%;}
+  .modal .form-row input, .modal .form-row select{width:100%;}
   .modal-actions{display:flex; gap:8px; margin-top:16px; justify-content:flex-end;}
   .modal-actions button{
     padding:9px 16px; border-radius:9px; border:none; font-family:'Cairo'; font-weight:700; cursor:pointer; font-size:15.5px;
   }
-  .modal-actions .cancel{background:transparent; border:1.5px solid #5B6B7C; color:#5B6B7C;}
+  .modal-actions .cancel{background:transparent; border:1.5px solid #6B6355; color:#6B6355;}
   .modal-actions .confirm{background:var(--leather); color:#FFFFFF;}
 
   ::-webkit-scrollbar{width:7px;}
@@ -357,6 +358,22 @@
     .sidebar{width:100%;}
     .grid-2{grid-template-columns:1fr;}
     .top-stats{grid-template-columns:repeat(2,1fr);}
+    .main{padding:16px;}
+    .panel-header{padding:16px;}
+    .stat-card{padding:12px;}
+  }
+
+  @media (max-width: 480px){
+    .top-stats{grid-template-columns:1fr;}
+    .panel-header h1{font-size:22px;}
+    .header-actions{width:100%;}
+    .icon-btn{flex:1; text-align:center; white-space:nowrap;}
+  }
+
+  html, body{overflow-x:hidden;}
+  .storage-note{
+    font-size:11px; color:#8FA3BE; text-align:center; padding-top:10px;
+    border-top:1px solid rgba(255,255,255,0.10); line-height:1.6;
   }
 
   #printArea{display:none;}
@@ -367,15 +384,43 @@
       display:block; position:absolute; top:0; right:0; left:0;
       padding:20px; background:#fff; color:#000;
     }
-    .print-header{display:flex; align-items:center; gap:14px; border-bottom:3px solid #5B8DEF; padding-bottom:12px; margin-bottom:16px;}
+    .print-header{display:flex; align-items:center; gap:14px; border-bottom:3px solid #C9A15A; padding-bottom:12px; margin-bottom:16px;}
     .print-header img{width:54px; height:54px; border-radius:8px; object-fit:cover;}
     .print-header h1{font-family:'Cairo', sans-serif; font-size:22px; margin:0;}
     .print-header .meta{font-size:13px; color:#555;}
     .print-table{width:100%; border-collapse:collapse; font-size:13px; margin-bottom:18px;}
     .print-table th, .print-table td{border:1px solid #ccc; padding:6px 8px; text-align:right;}
-    .print-table th{background:#F4F6F8;}
+    .print-table th{background:#F0E9D6;}
     .print-section-title{font-family:'Cairo', sans-serif; font-weight:700; font-size:15px; margin:16px 0 8px;}
   }
+
+  /* Schedule (المواعيد) */
+  .agenda-date-header{
+    font-family:'Cairo'; font-weight:700; font-size:15.5px; color:var(--leather);
+    margin:18px 0 8px; display:flex; align-items:center; gap:8px;
+  }
+  .agenda-date-header:first-child{margin-top:0;}
+  .agenda-date-header .count-badge{
+    background:var(--brass); color:var(--leather-dark); border-radius:20px;
+    font-size:12.5px; padding:1px 9px; font-family:'Tajawal'; font-weight:700;
+  }
+  .schedule-card{
+    background:var(--paper-2); border-radius:12px; padding:13px 16px;
+    box-shadow:var(--card-shadow); border:1px solid rgba(27,39,51,0.10);
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;
+  }
+  .schedule-card .info{display:flex; flex-direction:column; gap:2px;}
+  .schedule-card .info .who{font-family:'Cairo'; font-weight:700; font-size:16px;}
+  .schedule-card .info .when{font-size:14px; color:#6B6355; font-variant-numeric: tabular-nums;}
+  .schedule-card .info .note{font-size:13.5px; color:#A69B87;}
+  .schedule-card .sc-actions{display:flex; gap:6px; flex-shrink:0;}
+  .sc-btn{
+    border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sc-btn.done{background:var(--hunter); color:#fff;}
+  .sc-btn.cancel{background:transparent; border:1.5px solid var(--rust); color:var(--rust);}
+  .empty-agenda{color:#A69B87; font-size:15px; text-align:center; padding:30px 8px;}
 </style>
 </head>
 <body>
@@ -384,7 +429,7 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <svg width="140" height="140" viewBox="0 0 100 100" style="position:absolute; left:-14px; bottom:-14px; opacity:0.07; pointer-events:none;">
-      <g fill="#5B8DEF">
+      <g fill="#C9A15A">
         <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
         <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
         <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
@@ -395,7 +440,7 @@
     </svg>
     <div class="brand" id="brandBlock">
       <svg class="mark" viewBox="0 0 100 100">
-        <g fill="#5B8DEF">
+        <g fill="#C9A15A">
           <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
           <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
           <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
@@ -431,6 +476,7 @@
     <div class="section-tabs">
       <button class="section-tab active" id="secTraining" onclick="setAppSection('training')">🐴 التدريب</button>
       <button class="section-tab" id="secBoarding" onclick="setAppSection('boarding')">🏠 الإيواء</button>
+      <button class="section-tab" id="secSchedule" onclick="setAppSection('schedule')">📅 المواعيد</button>
     </div>
 
     <div id="trainingSidebar">
@@ -458,6 +504,13 @@
 
       <div class="trainee-list" id="boarderList"></div>
     </div>
+
+    <div id="scheduleSidebar" style="display:none; flex-direction:column; gap:16px; flex:1; min-height:0;">
+      <button class="add-trainee-btn" onclick="openAddScheduleModal()">+ إضافة موعد</button>
+      <div class="trainee-list" id="scheduleList"></div>
+    </div>
+
+    <div class="storage-note">🔒 جميع البيانات محفوظة محليًا على هذا الجهاز فقط</div>
   </div>
 
   <!-- MAIN -->
@@ -467,7 +520,7 @@
 
     <div class="welcome" id="welcomeScreen">
       <svg class="mark-big" viewBox="0 0 100 100">
-        <g fill="#5B8DEF">
+        <g fill="#C9A15A">
           <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
           <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
           <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
@@ -486,15 +539,18 @@
           <h1 id="pTraineeName">—</h1>
           <div class="sub" id="pTraineePhone">—</div>
         </div>
-        <div class="header-actions" id="panelActions"></div>
+        <div class="menu-wrap">
+          <button class="icon-btn" onclick="togglePanelMenu('traineeActionsMenu')">⋮ خيارات</button>
+          <div class="tools-menu" id="traineeActionsMenu"></div>
+        </div>
       </div>
 
       <div class="grid-2">
         <div class="balance-card">
           <div class="horseshoe-wrap">
             <svg viewBox="0 0 200 200">
-              <path d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#DDE6F5" stroke-width="16" stroke-linecap="round"/>
-              <path id="hsProgress" d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#5B8DEF" stroke-width="16" stroke-linecap="round"
+              <path d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#E9DFC6" stroke-width="16" stroke-linecap="round"/>
+              <path id="hsProgress" d="M 30 150 A 70 70 0 1 1 170 150" fill="none" stroke="#C9A15A" stroke-width="16" stroke-linecap="round"
                 stroke-dasharray="330" stroke-dashoffset="330"/>
             </svg>
             <div class="hs-center">
@@ -508,7 +564,7 @@
           </div>
           <div class="fee-row">
             <div>
-              <div style="font-size:14px;color:#5B6B7C;">الرسوم المستحقة</div>
+              <div style="font-size:14px;color:#6B6355;">الرسوم المستحقة</div>
               <div class="fee-status" id="feeStatusText">—</div>
             </div>
             <button class="small-btn brass" id="feeToggleBtn" onclick="toggleFeePaid()">تحديد كمدفوع</button>
@@ -541,7 +597,7 @@
 
       <div class="welcome" id="boardingWelcomeScreen">
         <svg class="mark-big" viewBox="0 0 100 100">
-          <g fill="#5B8DEF">
+          <g fill="#C9A15A">
             <path d="M8,58 C6,52 10,46 16,44 C18,36 24,30 30,26 L32,10 L40,24 C48,22 55,26 58,32 C52,34 46,38 44,44 C40,48 34,50 28,50 C24,54 20,58 14,60 C11,60 9,60 8,58 Z"/>
             <path d="M46,30 C54,28 62,32 66,40 C60,42 54,40 50,36 Z"/>
             <path d="M50,38 C60,38 68,44 72,52 C64,52 56,48 52,44 Z"/>
@@ -560,21 +616,24 @@
             <h1 id="pHorseName">—</h1>
             <div class="sub" id="pOwnerName">—</div>
           </div>
-          <div class="header-actions" id="boarderPanelActions"></div>
+          <div class="menu-wrap">
+            <button class="icon-btn" onclick="togglePanelMenu('boarderActionsMenu')">⋮ خيارات</button>
+            <div class="tools-menu" id="boarderActionsMenu"></div>
+          </div>
         </div>
 
         <div class="grid-2">
           <div class="balance-card">
-            <div style="font-size:14px; color:#5B6B7C; margin-bottom:4px;">الرسوم الشهرية</div>
+            <div style="font-size:14px; color:#6B6355; margin-bottom:4px;">الرسوم الشهرية</div>
             <div style="font-family:'Cairo'; font-weight:900; font-size:34px;" id="bMonthlyFee">0 د.ب</div>
             <div class="fee-row" style="border-top:none; margin-top:14px; padding-top:0;">
               <div>
-                <div style="font-size:14px;color:#5B6B7C;">حالة هذا الشهر</div>
+                <div style="font-size:14px;color:#6B6355;">حالة هذا الشهر</div>
                 <div class="fee-status" id="bMonthStatusText">—</div>
               </div>
               <button class="small-btn brass" id="bPayBtn" onclick="recordBoardingPayment()">تسجيل دفعة الشهر</button>
             </div>
-            <div style="width:100%; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(27,39,51,0.16); font-size:15px; color:#5B6B7C;" id="pBoarderPhoneLine"></div>
+            <div style="width:100%; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(27,39,51,0.16); font-size:15px; color:#6B6355;" id="pBoarderPhoneLine"></div>
           </div>
 
           <div class="right-col">
@@ -585,6 +644,28 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="scheduleMain" style="display:none;">
+      <div class="top-stats" id="scheduleTopStats"></div>
+      <div id="scheduleAgenda"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit boarder -->
+<div class="modal-overlay" id="editBoarderModal">
+  <div class="modal">
+    <h3>تعديل بيانات النزيل</h3>
+    <div class="form-row">
+      <input type="text" id="editOwnerName" placeholder="اسم مالك الخيل">
+      <input type="text" id="editHorseName" placeholder="اسم الخيل">
+      <input type="text" id="editOwnerPhone" placeholder="رقم الهاتف (اختياري)">
+      <input type="number" id="editMonthlyFee" placeholder="الرسوم الشهرية (د.ب)" step="0.5" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('editBoarderModal')">إلغاء</button>
+      <button class="confirm" onclick="submitEditBoarder()">حفظ</button>
     </div>
   </div>
 </div>
@@ -602,6 +683,21 @@
     <div class="modal-actions">
       <button class="cancel" onclick="closeModal('addBoarderModal')">إلغاء</button>
       <button class="confirm" onclick="submitAddBoarder()">إضافة</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit trainee -->
+<div class="modal-overlay" id="editTraineeModal">
+  <div class="modal">
+    <h3>تعديل بيانات المتدرب</h3>
+    <div class="form-row">
+      <input type="text" id="editName" placeholder="اسم المتدرب">
+      <input type="text" id="editPhone" placeholder="رقم الهاتف (اختياري)">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('editTraineeModal')">إلغاء</button>
+      <button class="confirm" onclick="submitEditTrainee()">حفظ</button>
     </div>
   </div>
 </div>
@@ -628,7 +724,7 @@
   <div class="modal" style="width:400px;">
     <h3>تذكير واتساب</h3>
     <div class="form-row">
-      <div style="font-size:14px; color:#5B6B7C; margin-bottom:2px;" id="waPhoneLabel">إلى: —</div>
+      <div style="font-size:14px; color:#6B6355; margin-bottom:2px;" id="waPhoneLabel">إلى: —</div>
       <textarea id="waMessageBox" rows="7" style="width:100%; resize:vertical; font-family:'Tajawal'; font-size:15.5px;"></textarea>
     </div>
     <div class="modal-actions">
@@ -663,7 +759,7 @@
   <div class="modal" style="text-align:center;">
     <div style="font-size:38px; margin-bottom:6px;">⚠️</div>
     <h3 style="color:var(--rust);">مسح جميع البيانات</h3>
-    <p style="color:#5B6B7C; font-size:15.5px; line-height:1.7; margin:0 0 18px;">
+    <p style="color:#6B6355; font-size:15.5px; line-height:1.7; margin:0 0 18px;">
       سيتم حذف كل بيانات المتدربين، الحصص، الحضور، نزلاء الإيواء، والمدفوعات نهائيًا من هذا الجهاز.<br>
       <b>هذا الإجراء لا يمكن التراجع عنه.</b>
     </p>
@@ -689,29 +785,51 @@
   </div>
 </div>
 
+<!-- Modal: Add schedule appointment -->
+<div class="modal-overlay" id="addScheduleModal">
+  <div class="modal">
+    <h3>إضافة موعد جديد</h3>
+    <div class="form-row">
+      <select id="schTrainee"></select>
+      <input type="date" id="schDate">
+      <input type="time" id="schTime">
+      <input type="number" id="schHours" placeholder="عدد الحصص" step="1" min="1" value="1">
+      <input type="text" id="schNote" placeholder="ملاحظة (اختياري)">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('addScheduleModal')">إلغاء</button>
+      <button class="confirm" onclick="submitAddSchedule()">إضافة الموعد</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // عدّل هذين الثابتين لكل عميل قبل رفع نسخته الخاصة — لا توجد واجهة إعدادات لتعديلهما من داخل التطبيق
 const STABLE_NAME = 'اسطبلات كلاسيك للفروسية';
 const STABLE_SUBTITLE = 'متابعة حصص المتدربين وإيواء الخيول';
 const OWNER_NAME = ''; // اسم مالك الاسطبل (اختياري) يُستخدم بالتقارير ورسائل واتساب فقط
 
-let DATA = { trainees: [], boarders: [], settings: {} };
+let DATA = { trainees: [], boarders: [], schedule: [], settings: {} };
 let currentId = null;
 let currentBoarderId = null;
 let viewMode = 'active'; // 'active' | 'archived'
 let boarderViewMode = 'active'; // 'active' | 'archived'
-let appSection = 'training'; // 'training' | 'boarding'
+let appSection = 'training'; // 'training' | 'boarding' | 'schedule'
 const STORAGE_KEY = 'stable-data-v1';
 
 function setAppSection(section){
   appSection = section;
   document.getElementById('secTraining').classList.toggle('active', section==='training');
   document.getElementById('secBoarding').classList.toggle('active', section==='boarding');
+  document.getElementById('secSchedule').classList.toggle('active', section==='schedule');
   document.getElementById('trainingSidebar').style.display = section==='training' ? 'flex' : 'none';
   document.getElementById('boardingSidebar').style.display = section==='boarding' ? 'flex' : 'none';
+  document.getElementById('scheduleSidebar').style.display = section==='schedule' ? 'flex' : 'none';
   document.getElementById('trainingMain').style.display = section==='training' ? 'block' : 'none';
   document.getElementById('boardingMain').style.display = section==='boarding' ? 'block' : 'none';
+  document.getElementById('scheduleMain').style.display = section==='schedule' ? 'block' : 'none';
   if(section==='boarding'){ renderBoarderList(); renderBoarderTopStats(); }
+  else if(section==='schedule'){ renderSchedule(); }
   else { renderTraineeList(); renderTopStats(); }
 }
 
@@ -739,6 +857,7 @@ async function loadData(){
   }catch(e){ DATA = { trainees: [] }; }
   if(!DATA.settings){ DATA.settings = {}; }
   if(!DATA.boarders){ DATA.boarders = []; }
+  if(!DATA.schedule){ DATA.schedule = []; }
   renderBrand();
   renderAll();
   renderBoarderTopStats();
@@ -757,7 +876,7 @@ function clearAllData(){
 async function executeClearAllData(){
   closeModal('clearDataModal');
 
-  DATA = { trainees: [], boarders: [], settings: {} };
+  DATA = { trainees: [], boarders: [], schedule: [], settings: {} };
   currentId = null;
   currentBoarderId = null;
   localStorage.removeItem(STORAGE_KEY);
@@ -774,6 +893,7 @@ async function executeClearAllData(){
   renderBoarderTopStats();
   renderBoarderList();
   renderBoarderPanel();
+  renderSchedule();
   setStatus('تم مسح جميع البيانات ✓');
 }
 
@@ -903,18 +1023,21 @@ function renderTraineePanel(){
   document.getElementById('pTraineeName').textContent = t.name;
   document.getElementById('pTraineePhone').textContent = t.phone ? t.phone : 'لا يوجد رقم هاتف مسجل';
 
-  const actionsEl = document.getElementById('panelActions');
+  const actionsEl = document.getElementById('traineeActionsMenu');
   if(t.archived){
     actionsEl.innerHTML = `
-      <button class="icon-btn" onclick="restoreTrainee()">إعادة تنشيط</button>
-      <button class="icon-btn danger" onclick="deleteTrainee()">حذف نهائي</button>
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); openEditTraineeModal();">✏️ تعديل البيانات</button>
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); restoreTrainee();">↩️ إعادة تنشيط</button>
+      <button class="menu-item" style="color:var(--rust);" onclick="closePanelMenu('traineeActionsMenu'); deleteTrainee();">🗑 حذف نهائي</button>
     `;
   } else {
     actionsEl.innerHTML = `
-      <button class="icon-btn" onclick="openRenewModal()">تجديد باقة</button>
-      ${t.phone ? `<button class="icon-btn" style="border-color:#3FA24A; color:#3FA24A;" onclick="sendWhatsAppReminder('${t.id}')">📱 تذكير واتساب</button>` : ''}
-      <button class="icon-btn" onclick="archiveTrainee()">أرشفة المتدرب</button>
-      <button class="icon-btn danger" onclick="deleteTrainee()">🗑 حذف نهائي</button>
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); openEditTraineeModal();">✏️ تعديل البيانات</button>
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); openRenewModal();">🔄 تجديد باقة</button>
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); openAddScheduleModal('${t.id}');">📅 جدولة موعد</button>
+      ${t.phone ? `<button class="menu-item" style="color:#3FA24A;" onclick="closePanelMenu('traineeActionsMenu'); sendWhatsAppReminder('${t.id}');">📱 تذكير واتساب</button>` : ''}
+      <button class="menu-item" onclick="closePanelMenu('traineeActionsMenu'); archiveTrainee();">🗄 أرشفة المتدرب</button>
+      <button class="menu-item" style="color:var(--rust);" onclick="closePanelMenu('traineeActionsMenu'); deleteTrainee();">🗑 حذف نهائي</button>
     `;
   }
 
@@ -927,7 +1050,7 @@ function renderTraineePanel(){
 
   document.getElementById('hsNum').textContent = rem;
   document.getElementById('hsProgress').style.strokeDashoffset = offset;
-  document.getElementById('hsProgress').style.stroke = rem <= 2 ? '#E24B4A' : '#5B8DEF';
+  document.getElementById('hsProgress').style.stroke = rem <= 2 ? '#E24B4A' : '#C9A15A';
   document.getElementById('totalPurchased').textContent = purchased;
   document.getElementById('totalUsed').textContent = used;
 
@@ -982,6 +1105,28 @@ function openAddTraineeModal(){
   document.getElementById('newFee').value='';
   document.getElementById('addModal').classList.add('show');
 }
+function openEditTraineeModal(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  document.getElementById('editName').value = t.name;
+  document.getElementById('editPhone').value = t.phone || '';
+  document.getElementById('editTraineeModal').classList.add('show');
+}
+
+async function submitEditTrainee(){
+  const t = getTrainee(currentId);
+  if(!t) return;
+  const name = document.getElementById('editName').value.trim();
+  const phone = document.getElementById('editPhone').value.trim();
+  if(!name){ alert('الرجاء إدخال اسم المتدرب'); return; }
+  t.name = name;
+  t.phone = phone;
+  closeModal('editTraineeModal');
+  await saveData();
+  renderTraineeList();
+  renderTraineePanel();
+}
+
 function openRenewModal(){
   document.getElementById('renewHours').value='';
   document.getElementById('renewFee').value='';
@@ -1219,17 +1364,19 @@ function renderBoarderPanel(){
   document.getElementById('pBoarderPhoneLine').textContent = b.phone ? ('الهاتف: ' + b.phone) : 'لا يوجد رقم هاتف مسجل';
   document.getElementById('bMonthlyFee').textContent = b.monthlyFee.toFixed(3) + ' د.ب';
 
-  const actionsEl = document.getElementById('boarderPanelActions');
+  const actionsEl = document.getElementById('boarderActionsMenu');
   if(b.archived){
     actionsEl.innerHTML = `
-      <button class="icon-btn" onclick="restoreBoarder()">إعادة تنشيط</button>
-      <button class="icon-btn danger" onclick="deleteBoarder()">حذف نهائي</button>
+      <button class="menu-item" onclick="closePanelMenu('boarderActionsMenu'); openEditBoarderModal();">✏️ تعديل البيانات</button>
+      <button class="menu-item" onclick="closePanelMenu('boarderActionsMenu'); restoreBoarder();">↩️ إعادة تنشيط</button>
+      <button class="menu-item" style="color:var(--rust);" onclick="closePanelMenu('boarderActionsMenu'); deleteBoarder();">🗑 حذف نهائي</button>
     `;
   } else {
     actionsEl.innerHTML = `
-      ${b.phone ? `<button class="icon-btn" style="border-color:#3FA24A; color:#3FA24A;" onclick="sendBoardingReminder('${b.id}')">📱 تذكير واتساب</button>` : ''}
-      <button class="icon-btn" onclick="archiveBoarder()">أرشفة النزيل</button>
-      <button class="icon-btn danger" onclick="deleteBoarder()">🗑 حذف نهائي</button>
+      <button class="menu-item" onclick="closePanelMenu('boarderActionsMenu'); openEditBoarderModal();">✏️ تعديل البيانات</button>
+      ${b.phone ? `<button class="menu-item" style="color:#3FA24A;" onclick="closePanelMenu('boarderActionsMenu'); sendBoardingReminder('${b.id}');">📱 تذكير واتساب</button>` : ''}
+      <button class="menu-item" onclick="closePanelMenu('boarderActionsMenu'); archiveBoarder();">🗄 أرشفة النزيل</button>
+      <button class="menu-item" style="color:var(--rust);" onclick="closePanelMenu('boarderActionsMenu'); deleteBoarder();">🗑 حذف نهائي</button>
     `;
   }
 
@@ -1261,6 +1408,34 @@ function renderBoarderPanel(){
       </div>
     `).join('');
   }
+}
+
+function openEditBoarderModal(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  document.getElementById('editOwnerName').value = b.ownerName;
+  document.getElementById('editHorseName').value = b.horseName;
+  document.getElementById('editOwnerPhone').value = b.phone || '';
+  document.getElementById('editMonthlyFee').value = b.monthlyFee;
+  document.getElementById('editBoarderModal').classList.add('show');
+}
+
+async function submitEditBoarder(){
+  const b = getBoarder(currentBoarderId);
+  if(!b) return;
+  const ownerName = document.getElementById('editOwnerName').value.trim();
+  const horseName = document.getElementById('editHorseName').value.trim();
+  const phone = document.getElementById('editOwnerPhone').value.trim();
+  const monthlyFee = parseFloat(document.getElementById('editMonthlyFee').value) || 0;
+  if(!ownerName || !horseName){ alert('الرجاء إدخال اسم المالك واسم الخيل'); return; }
+  b.ownerName = ownerName;
+  b.horseName = horseName;
+  b.phone = phone;
+  b.monthlyFee = monthlyFee;
+  closeModal('editBoarderModal');
+  await saveData();
+  renderBoarderList();
+  renderBoarderPanel();
 }
 
 function openAddBoarderModal(){
@@ -1372,23 +1547,194 @@ function sendBoardingReminder(id){
   document.getElementById('waModal').classList.add('show');
 }
 
+/* ---------- Schedule (المواعيد) ---------- */
+function getSchedule(id){ return DATA.schedule.find(s => s.id === id); }
+
+function upcomingSchedule(){
+  return DATA.schedule
+    .filter(s => s.status === 'scheduled')
+    .slice()
+    .sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+}
+
+function scheduleDateLabel(dateStr){
+  const today = todayStr();
+  const tmr = new Date(Date.now() + 86400000).toISOString().slice(0,10);
+  if(dateStr === today) return 'اليوم — ' + formatDate(dateStr);
+  if(dateStr === tmr) return 'غدًا — ' + formatDate(dateStr);
+  if(dateStr < today) return 'متأخر — ' + formatDate(dateStr);
+  return formatDate(dateStr);
+}
+
+function openAddScheduleModal(preselectTraineeId){
+  const active = DATA.trainees.filter(t=>!t.archived).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const sel = document.getElementById('schTrainee');
+  if(active.length===0){
+    alert('أضف متدربًا نشطًا أولًا قبل جدولة موعد له.');
+    return;
+  }
+  sel.innerHTML = active.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+  if(preselectTraineeId){ sel.value = preselectTraineeId; }
+  document.getElementById('schDate').value = todayStr();
+  document.getElementById('schTime').value = '';
+  document.getElementById('schHours').value = 1;
+  document.getElementById('schNote').value = '';
+  document.getElementById('addScheduleModal').classList.add('show');
+}
+
+async function submitAddSchedule(){
+  const traineeId = document.getElementById('schTrainee').value;
+  const date = document.getElementById('schDate').value;
+  const time = document.getElementById('schTime').value;
+  const hours = parseFloat(document.getElementById('schHours').value) || 1;
+  const note = document.getElementById('schNote').value.trim();
+  if(!traineeId || !date){ alert('الرجاء اختيار المتدرب والتاريخ'); return; }
+
+  DATA.schedule.push({ id: uid(), traineeId, date, time, hours, note, status: 'scheduled' });
+  closeModal('addScheduleModal');
+  await saveData();
+  renderSchedule();
+  setStatus('تم إضافة الموعد ✓');
+}
+
+async function completeSchedule(id){
+  const s = getSchedule(id);
+  if(!s) return;
+  const t = getTrainee(s.traineeId);
+  if(!t){ alert('المتدرب غير موجود (ربما تم حذفه)'); return; }
+  t.attendance.push({ id: uid(), date: s.date, time: s.time, hours: s.hours, note: s.note || 'من موعد مجدول' });
+  DATA.schedule = DATA.schedule.filter(x=>x.id!==id);
+  await saveData();
+  renderSchedule();
+  if(currentId === t.id){ renderAll(); }
+  setStatus('تم تسجيل الحصة كحضور ✓');
+}
+
+async function cancelSchedule(id){
+  if(!confirm('إلغاء هذا الموعد؟')) return;
+  DATA.schedule = DATA.schedule.filter(x=>x.id!==id);
+  await saveData();
+  renderSchedule();
+}
+
+function renderSchedule(){
+  const upcoming = upcomingSchedule();
+  const today = todayStr();
+  const weekEnd = new Date(Date.now() + 7*86400000).toISOString().slice(0,10);
+  const todayCount = upcoming.filter(s=>s.date===today).length;
+  const weekCount = upcoming.filter(s=>s.date>=today && s.date<=weekEnd).length;
+  const overdueCount = upcoming.filter(s=>s.date<today).length;
+
+  document.getElementById('scheduleTopStats').innerHTML = `
+    <div class="stat-card">
+      <div class="label">مواعيد اليوم</div>
+      <div class="value">${todayCount}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">مواعيد هذا الأسبوع</div>
+      <div class="value">${weekCount}</div>
+    </div>
+    <div class="stat-card ${overdueCount>0?'warn':''}">
+      <div class="label">مواعيد فائتة لم تُسجّل</div>
+      <div class="value">${overdueCount}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">إجمالي المواعيد القادمة</div>
+      <div class="value">${upcoming.length}</div>
+    </div>
+  `;
+
+  // Sidebar compact list
+  const sideEl = document.getElementById('scheduleList');
+  if(upcoming.length===0){
+    sideEl.innerHTML = `<div class="empty-list">لا يوجد مواعيد مجدولة</div>`;
+  } else {
+    sideEl.innerHTML = upcoming.map(s=>{
+      const t = getTrainee(s.traineeId);
+      const name = t ? t.name : 'متدرب محذوف';
+      return `
+        <div class="trainee-item" style="cursor:default;">
+          <div class="name">${escapeHtml(name)}</div>
+          <div class="meta">
+            <span>${scheduleDateLabel(s.date)}${s.time ? ' · ' + s.time : ''}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Main agenda grouped by date
+  const agendaEl = document.getElementById('scheduleAgenda');
+  if(upcoming.length===0){
+    agendaEl.innerHTML = `<div class="empty-agenda">لا يوجد مواعيد مجدولة حاليًا. اضغط "+ إضافة موعد" للبدء.</div>`;
+    return;
+  }
+
+  const groups = {};
+  upcoming.forEach(s=>{
+    if(!groups[s.date]) groups[s.date] = [];
+    groups[s.date].push(s);
+  });
+
+  agendaEl.innerHTML = Object.keys(groups).sort().map(dateStr=>{
+    const items = groups[dateStr];
+    const cards = items.map(s=>{
+      const t = getTrainee(s.traineeId);
+      const name = t ? t.name : 'متدرب محذوف';
+      return `
+        <div class="schedule-card">
+          <div class="info">
+            <div class="who">${escapeHtml(name)}</div>
+            <div class="when">${s.time ? s.time + ' · ' : ''}${s.hours} حصة</div>
+            ${s.note ? `<div class="note">${escapeHtml(s.note)}</div>` : ''}
+          </div>
+          <div class="sc-actions">
+            <button class="sc-btn done" onclick="completeSchedule('${s.id}')" title="تم — سجّل كحضور">✓</button>
+            <button class="sc-btn cancel" onclick="cancelSchedule('${s.id}')" title="إلغاء الموعد">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="agenda-date-header">${scheduleDateLabel(dateStr)} <span class="count-badge">${items.length}</span></div>
+      ${cards}
+    `;
+  }).join('');
+}
+
 /* ---------- Tools menu ---------- */
 function toggleToolsMenu(){
+  document.querySelectorAll('.tools-menu.show').forEach(el=>{
+    if(el.id!=='toolsMenu') el.classList.remove('show');
+  });
   document.getElementById('toolsMenu').classList.toggle('show');
 }
 function closeToolsMenu(){
   document.getElementById('toolsMenu').classList.remove('show');
 }
+
+function togglePanelMenu(id){
+  document.querySelectorAll('.tools-menu.show').forEach(el=>{
+    if(el.id!==id) el.classList.remove('show');
+  });
+  document.getElementById(id).classList.toggle('show');
+}
+function closePanelMenu(id){
+  document.getElementById(id).classList.remove('show');
+}
+
 document.addEventListener('click', function(e){
-  const wrap = document.querySelector('.menu-wrap');
-  if(wrap && !wrap.contains(e.target)){
-    closeToolsMenu();
-  }
+  document.querySelectorAll('.tools-menu.show').forEach(menu=>{
+    const wrap = menu.closest('.menu-wrap');
+    if(wrap && !wrap.contains(e.target)){
+      menu.classList.remove('show');
+    }
+  });
 });
 
 /* ---------- Save / Backup ---------- */
 function setStatus(msg, isError){
-  const color = isError ? '#E24B4A' : '#5B6B7C';
+  const color = isError ? '#E24B4A' : '#6B6355';
   const el = document.getElementById('toolbarStatus');
   if(el){ el.textContent = msg; el.style.color = color; }
 }
@@ -1414,10 +1760,14 @@ function importJsonBackup(event){
       if(!imported.trainees){ throw new Error('صيغة غير صحيحة'); }
       DATA = imported;
       if(!DATA.settings){ DATA.settings = { stableName:'', ownerName:'', logo:'' }; }
+      if(!DATA.boarders){ DATA.boarders = []; }
+      if(!DATA.schedule){ DATA.schedule = []; }
       currentId = null;
       await saveData();
       renderBrand();
       renderAll();
+      renderBoarderTopStats();
+      renderSchedule();
       closeToolsMenu();
       setStatus('تم استيراد النسخة بنجاح ✓');
     }catch(err){
@@ -1546,6 +1896,20 @@ function printMonthlyReport(){
           <td>${escapeHtml(r.note)}</td>
         </tr>
       `).join('') : `<tr><td colspan="5">لا يوجد حضور مسجل هذا الشهر</td></tr>`}
+    </table>
+
+    <div class="print-section-title">ملخص الإيواء</div>
+    <table class="print-table">
+      <tr><th>اسم الخيل</th><th>اسم المالك</th><th>الهاتف</th><th>الرسوم الشهرية (د.ب)</th><th>مدفوعة هذا الشهر</th></tr>
+      ${DATA.boarders.length ? DATA.boarders.map(b=>`
+        <tr>
+          <td>${escapeHtml(b.horseName)}</td>
+          <td>${escapeHtml(b.ownerName)}</td>
+          <td>${escapeHtml(b.phone||'—')}</td>
+          <td>${b.monthlyFee.toFixed(3)}</td>
+          <td>${isPaidForMonth(b, monthStr) ? 'نعم' : 'لا'}</td>
+        </tr>
+      `).join('') : `<tr><td colspan="5">لا يوجد نزلاء مسجلون</td></tr>`}
     </table>
   `;
 
