@@ -129,8 +129,9 @@
     background:rgba(255,255,255,0.05);
     border:1px solid transparent;
     border-radius:10px;
-    padding:11px 12px;
+    padding:9px 12px;
     cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
     transition:background .15s ease, border-color .15s ease;
   }
   .trainee-item:hover{background:rgba(255,255,255,0.10);}
@@ -138,14 +139,17 @@
     background:rgba(201,161,90,0.16);
     border-color:var(--brass);
   }
-  .trainee-item .name{font-family:'Cairo'; font-weight:700; font-size:17px; color:#FFFFFF;}
+  .trainee-item .name{
+    font-family:'Cairo'; font-weight:700; font-size:15.5px; color:#FFFFFF;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
+  }
   .trainee-item .meta{
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:14.5px; color:#8FA3BE; margin-top:4px;
+    display:flex; align-items:center; gap:6px; flex-shrink:0;
+    font-size:13px; color:#8FA3BE;
     font-variant-numeric: tabular-nums;
   }
   .pill{
-    padding:2px 8px; border-radius:20px; font-size:13px; font-weight:700;
+    padding:2px 8px; border-radius:20px; font-size:12px; font-weight:700; white-space:nowrap;
   }
   .pill.low{background:rgba(226,75,74,0.22); color:#F0B5AC;}
   .pill.ok{background:rgba(31,146,84,0.22); color:#C7DDB4;}
@@ -356,6 +360,7 @@
   @media (max-width: 860px){
     .app{flex-direction:column;}
     .sidebar{width:100%;}
+    .trainee-list{max-height:38vh; overflow-y:auto;}
     .grid-2{grid-template-columns:1fr;}
     .top-stats{grid-template-columns:repeat(2,1fr);}
     .main{padding:16px;}
@@ -364,10 +369,12 @@
   }
 
   @media (max-width: 480px){
-    .top-stats{grid-template-columns:1fr;}
     .panel-header h1{font-size:22px;}
     .header-actions{width:100%;}
     .icon-btn{flex:1; text-align:center; white-space:nowrap;}
+    .stat-card{padding:10px;}
+    .stat-card .label{font-size:12.5px;}
+    .stat-card .value{font-size:22px;}
   }
 
   html, body{overflow-x:hidden;}
@@ -996,14 +1003,12 @@ function renderTraineeList(){
     const low = rem <= 2 && viewMode==='active';
     return `
       <div class="trainee-item ${t.id===currentId?'active':''}" onclick="selectTrainee('${t.id}')">
-        <div class="name">${escapeHtml(t.name)}</div>
-        <div class="meta">
-          <span>${rem} حصة متبقية</span>
-          <span style="display:flex; align-items:center; gap:6px;">
-            ${low && t.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendWhatsAppReminder('${t.id}')" title="تذكير واتساب">📱</button>` : ''}
-            <span class="pill ${low?'low':'ok'}">${low?'منخفض':(viewMode==='archived'?'مؤرشف':'جيد')}</span>
-          </span>
-        </div>
+        <span class="name">${escapeHtml(t.name)}</span>
+        <span class="meta">
+          ${low && t.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendWhatsAppReminder('${t.id}')" title="تذكير واتساب">📱</button>` : ''}
+          <span>${rem} حصة</span>
+          <span class="pill ${low?'low':'ok'}">${low?'منخفض':(viewMode==='archived'?'مؤرشف':'جيد')}</span>
+        </span>
       </div>
     `;
   }).join('');
@@ -1329,14 +1334,12 @@ function renderBoarderList(){
     const overdue = boarderViewMode==='active' && !isPaidForMonth(b, currentMonth);
     return `
       <div class="trainee-item ${b.id===currentBoarderId?'active':''}" onclick="selectBoarder('${b.id}')">
-        <div class="name">${escapeHtml(b.horseName)}</div>
-        <div class="meta">
+        <span class="name">${escapeHtml(b.horseName)}</span>
+        <span class="meta">
+          ${overdue && b.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendBoardingReminder('${b.id}')" title="تذكير واتساب">📱</button>` : ''}
           <span>${escapeHtml(b.ownerName)}</span>
-          <span style="display:flex; align-items:center; gap:6px;">
-            ${overdue && b.phone ? `<button class="wa-mini" onclick="event.stopPropagation(); sendBoardingReminder('${b.id}')" title="تذكير واتساب">📱</button>` : ''}
-            <span class="pill ${overdue?'low':'ok'}">${overdue?'متأخر':(boarderViewMode==='archived'?'مؤرشف':'مسدد')}</span>
-          </span>
-        </div>
+          <span class="pill ${overdue?'low':'ok'}">${overdue?'متأخر':(boarderViewMode==='archived'?'مؤرشف':'مسدد')}</span>
+        </span>
       </div>
     `;
   }).join('');
@@ -1654,10 +1657,8 @@ function renderSchedule(){
       const name = t ? t.name : 'متدرب محذوف';
       return `
         <div class="trainee-item" style="cursor:default;">
-          <div class="name">${escapeHtml(name)}</div>
-          <div class="meta">
-            <span>${scheduleDateLabel(s.date)}${s.time ? ' · ' + s.time : ''}</span>
-          </div>
+          <span class="name">${escapeHtml(name)}</span>
+          <span class="meta">${scheduleDateLabel(s.date)}${s.time ? ' · ' + s.time : ''}</span>
         </div>
       `;
     }).join('');
